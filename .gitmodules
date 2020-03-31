@@ -1,0 +1,3 @@
+[submodule "src/utils/nlink/nlink_unpack"]
+	path = src/utils/nlink/nlink_unpack
+	url = https://github.com/NooploopStudio/nlink_unpack.git

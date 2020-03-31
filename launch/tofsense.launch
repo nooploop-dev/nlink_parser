@@ -1,0 +1,7 @@
+<launch>
+  <node pkg="nlink_parser" type="tofsense" name="tofsense0" output="screen">
+    <param name="port_name" type="str" value="/dev/ttyUSB0" />
+    <param name="baud_rate" type="int" value="921600" />
+    <param name="inquire_mode" type="bool" value="true" />
+  </node>
+</launch>
