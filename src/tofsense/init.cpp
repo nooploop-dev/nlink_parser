@@ -1,5 +1,6 @@
 #include "init.h"
 #include <nlink/nlink_unpack/nlink_utils.h>
+#include <nutils.h>
 
 namespace TOFSense {
 #pragma pack(push, 1)
@@ -14,15 +15,44 @@ struct {
 
 Init::Init(NFrameExtraction *frameExtraction, serial::Serial *serial)
     : serial_(serial) {
-  ros::NodeHandle nh("~");
 
-  isInquireMode_ = serial_ ? nh.param("inquire_mode", true) : false;
+  isInquireMode_ =
+      serial_ ? ros::param::param<bool>("~inquire_mode", true) : false;
 
   initFrame0(frameExtraction);
-
-  //  test(frameExtraction);
 }
 
+/*
+// called per ms
+void Init::updateStatus() {
+  if (isInquireMode_) {
+    static int ms = 0;
+    if (ms % 100 == 0) {
+      frame0Map_.clear();
+      nodeIndex_ = 0;
+    }
+    if (ms % 6 == 0) {
+      if (nodeIndex_ < 8) {
+        readFrame_.id = nodeIndex_;
+        auto data = reinterpret_cast<uint8_t *>(&readFrame_);
+        updateCheckSum(data, sizeof(readFrame_));
+        serial_->write(data, sizeof(readFrame_));
+      } else if (nodeIndex_ == 8) {
+        if (!frame0Map_.empty()) {
+
+          nlink_parser::TofsenseCascade msgCascade;
+          for (const auto &msg : frame0Map_) {
+            msgCascade.nodes.push_back(msg.second);
+          }
+          publishers_.at(protocolFrame0_).publish(msgCascade);
+        }
+      }
+    }
+    ++nodeIndex_;
+    ++ms;
+  }
+}
+*/
 void Init::initFrame0(NFrameExtraction *frameExtraction) {
   protocolFrame0_ = new NTS_ProtocolFrame0;
   frameExtraction->addProtocol(protocolFrame0_);
@@ -30,13 +60,15 @@ void Init::initFrame0(NFrameExtraction *frameExtraction) {
     if (!publishers_[protocolFrame0_]) {
       ros::NodeHandle nodeHandle;
       if (isInquireMode_) {
+        auto topic = "nlink_tofsense_cascade";
         publishers_[protocolFrame0_] =
-            nodeHandle.advertise<nlink_parser::TofsenseCascade>(
-                "nlink_tofsense_cascade", 50);
+            nodeHandle.advertise<nlink_parser::TofsenseCascade>(topic, 50);
+        topicadvertisedTip(topic);
       } else {
+        auto topic = "nlink_tofsense_frame0";
         publishers_[protocolFrame0_] =
-            nodeHandle.advertise<nlink_parser::TofsenseFrame0>(
-                "nlink_tofsense_frame0", 50);
+            nodeHandle.advertise<nlink_parser::TofsenseFrame0>(topic, 50);
+        topicadvertisedTip(topic);
       }
     }
     const auto &data = ntsFrame0_.data;
@@ -64,25 +96,27 @@ void Init::initFrame0(NFrameExtraction *frameExtraction) {
                                   timerRead_.start();
                                 },
                                 false, true);
-    timerRead_ =
-        nh.createTimer(ros::Duration(0.006),
-                       [=](const ros::TimerEvent &) {
-                         if (nodeIndex_ >= 8) {
-                           nlink_parser::TofsenseCascade msgCascade;
-                           for (const auto &msg : frame0Map_) {
-                             msgCascade.nodes.push_back(msg.second);
-                           }
-                           publishers_.at(protocolFrame0_).publish(msgCascade);
-                           timerRead_.stop();
-                         } else {
-                           readFrame_.id = nodeIndex_;
-                           auto data = reinterpret_cast<uint8_t *>(&readFrame_);
-                           updateCheckSum(data, sizeof(readFrame_));
-                           serial_->write(data, sizeof(readFrame_));
-                           ++nodeIndex_;
-                         }
-                       },
-                       false, false);
+    timerRead_ = nh.createTimer(
+        ros::Duration(0.006),
+        [=](const ros::TimerEvent &) {
+          if (nodeIndex_ >= 8) {
+            if (!frame0Map_.empty()) {
+              nlink_parser::TofsenseCascade msgCascade;
+              for (const auto &msg : frame0Map_) {
+                msgCascade.nodes.push_back(msg.second);
+              }
+              publishers_.at(protocolFrame0_).publish(msgCascade);
+            }
+            timerRead_.stop();
+          } else {
+            readFrame_.id = nodeIndex_;
+            auto data = reinterpret_cast<uint8_t *>(&readFrame_);
+            updateCheckSum(data, sizeof(readFrame_));
+            serial_->write(data, sizeof(readFrame_));
+            ++nodeIndex_;
+          }
+        },
+        false, false);
   }
 }
 /*

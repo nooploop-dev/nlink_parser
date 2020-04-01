@@ -18,10 +18,11 @@ void enumerate_ports() {
 
 void initSerial(serial::Serial *serial) {
   try {
-    //    enumerate_ports();
-    ros::NodeHandle nh("~");
-    auto port_name = nh.param("port_name", std::string("/dev/ttyUSB0"));
-    auto baud_rate = nh.param("baud_rate", 921600);
+
+    auto port_name =
+        ros::param::param<std::string>("~port_name", "/dev/ttyUSB0");
+    auto baud_rate = ros::param::param<int>("~baud_rate", 921600);
+
     serial->setPort(port_name);
     serial->setBaudrate(static_cast<uint32_t>(baud_rate));
     ROS_INFO("try to open serial port with %s,%d", port_name.data(), baud_rate);

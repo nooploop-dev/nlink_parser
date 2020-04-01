@@ -86,6 +86,7 @@ add_library(${nutils}
     src/utils/nlink/tofsense_protocols.cpp
     src/utils/nlink/nlink_unpack/nlink_tofsense_frame0.c
     src/utils/init_serial.cpp
+    src/utils/nutils.cpp
 )
 target_link_libraries(${nutils}
   ${catkin_LIBRARIES}

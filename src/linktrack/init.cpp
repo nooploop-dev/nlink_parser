@@ -1,5 +1,6 @@
 #include "init.h"
 #include <nlink/linktrack_protocols.h>
+#include <nutils.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 
@@ -7,12 +8,6 @@
   for (size_t _CNT = 0; _CNT < sizeof(SRC) / sizeof(SRC[0]); ++_CNT) {         \
     DEST[_CNT] = SRC[_CNT];                                                    \
   }
-
-static void topicTip(const char *topic) {
-  ROS_INFO("%s has been advertised,use 'rostopic "
-           "echo /%s' to view the data",
-           topic, topic);
-}
 
 namespace LinkTrack {
 
@@ -55,7 +50,7 @@ void Init::initAnchorFrame0(NFrameExtraction *frameExtraction) {
       publishers_[protocol] =
           nodeHandle_.advertise<nlink_parser::LinktrackAnchorframe0>(topic,
                                                                      200);
-      topicTip(topic);
+      topicadvertisedTip(topic);
     }
     auto data = nltAnchorFrame0_.data;
     //    nlink_parser::LinktrackAnchorframe0 msgAnchorFrame0Data_;
@@ -87,8 +82,9 @@ void Init::initTagFrame0(NFrameExtraction *frameExtraction) {
       auto topic = "nlink_linktrack_tagframe0";
       publishers_[protocol] =
           nodeHandle_.advertise<nlink_parser::LinktrackTagframe0>(topic, 200);
-      topicTip(topic);
+      topicadvertisedTip(topic);
     }
+
     const auto &data = nltTagFrame0_.data;
     auto &msgData = msgTagFrame0Data_;
 
@@ -118,7 +114,7 @@ void Init::initNodeFrame0(NFrameExtraction *frameExtraction) {
       auto topic = "nlink_linktrack_nodeframe0";
       publishers_[protocol] =
           nodeHandle_.advertise<nlink_parser::LinktrackNodeframe0>(topic, 200);
-      topicTip(topic);
+      topicadvertisedTip(topic);
       ;
     }
     const auto &data = nltNodeFrame0_.data;
@@ -150,7 +146,7 @@ void Init::initNodeFrame1(NFrameExtraction *frameExtraction) {
       auto topic = "nlink_linktrack_nodeframe1";
       publishers_[protocol] =
           nodeHandle_.advertise<nlink_parser::LinktrackNodeframe1>(topic, 200);
-      topicTip(topic);
+      topicadvertisedTip(topic);
     }
     const auto &data = nltNodeFrame1_.data;
     auto &msgData = msgNodeFrame1Data_;
@@ -184,7 +180,7 @@ void Init::initNodeFrame2(NFrameExtraction *frameExtraction) {
       auto topic = "nlink_linktrack_nodeframe2";
       publishers_[protocol] =
           nodeHandle_.advertise<nlink_parser::LinktrackNodeframe2>(topic, 200);
-      topicTip(topic);
+      topicadvertisedTip(topic);
     }
     const auto &data = nltNodeFrame2_.data;
     auto &msgData = msgNodeFrame2Data_;
@@ -227,7 +223,7 @@ void Init::initNodeFrame3(NFrameExtraction *frameExtraction) {
       auto topic = "nlink_linktrack_nodeframe3";
       publishers_[protocol] =
           nodeHandle_.advertise<nlink_parser::LinktrackNodeframe3>(topic, 200);
-      topicTip(topic);
+      topicadvertisedTip(topic);
     }
     const auto &data = nltNodeFrame3_.data;
     auto &msgData = msgNodeFrame3Data_;
