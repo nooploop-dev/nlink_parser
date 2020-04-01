@@ -105,6 +105,12 @@ same as linktrack.
   - **`/nlink_tofsense_frame0`** ([nlink_parser::TofsenseFrame0])
 
 
+## Related Projects
+  - [nlink_unpack](https://github.com/NooploopStudio/nlink_unpack) Used for unpacking nlink protocols written in C.(submodule of this repository)
+  - [nlink_example](https://github.com/NooploopStudio/nlink_example) Example of how to use nlink_parser ROS package in another package.
+
+
+
 ## Bugs & Feature Requests
 
 Please report bugs and request features using the [Issue Tracker](https://github.com/NooploopStudio/nlink_parser/issues).
