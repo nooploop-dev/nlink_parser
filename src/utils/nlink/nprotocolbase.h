@@ -24,7 +24,13 @@ protected:
 
   size_t length() const { return length_; }
 
-  void setLength(size_t length) { length_ = length; }
+  bool setLength(size_t length) {
+    if (length < fixedLength_) {
+      return false;
+    }
+    length_ = length;
+    return true;
+  }
 
   bool isLengthKnowable() const { return isLengthKnowable_; }
 
@@ -35,6 +41,7 @@ protected:
 private:
   //例如nmea协议长度不可知，直到找到tail
   bool isLengthKnowable_ = true;
+  const size_t fixedLength_ = 0;
   size_t length_ = 0;
   std::string header_;
   std::string tail_;

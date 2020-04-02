@@ -4,7 +4,8 @@
 NProtocolBase::NProtocolBase(bool isLengthKnowable, size_t length,
                              const std::initializer_list<uint8_t> &header,
                              const std::initializer_list<uint8_t> &tail)
-    : isLengthKnowable_(isLengthKnowable), length_(length) {
+    : isLengthKnowable_(isLengthKnowable), fixedLength_(length) {
+  length_ = length;
   for (auto byte : header) {
     header_.push_back(static_cast<char>(byte));
   }

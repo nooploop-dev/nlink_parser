@@ -103,6 +103,15 @@ target_link_libraries(${LINKTRACK_NAME}
     )
 add_dependencies(${LINKTRACK_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
+set(LINKTRACK_RVIZ_NAME "linktrack_rviz_converter")
+add_executable(${LINKTRACK_RVIZ_NAME}
+    src/linktrack/main_rviz_converter.cpp
+    )
+target_link_libraries(${LINKTRACK_RVIZ_NAME}
+    ${nutils}
+    )
+add_dependencies(${LINKTRACK_RVIZ_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+
 set(TOFSENSE_NAME "tofsense")
 add_executable(${TOFSENSE_NAME}
     src/tofsense/init.cpp

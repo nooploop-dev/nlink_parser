@@ -29,7 +29,7 @@ The nlink_parser package has been tested under [ROS] Kinetic and Ubuntu 16.04.
 - [Robot Operating System (ROS)](http://wiki.ros.org) (middleware for robotics),
 - ros-serial
 
-		sudo apt-get install ros-kinetic-serial
+      sudo apt-get install ros-kinetic-serial
 
     Please make sure you have the permission to read or write to serial device, refer to [Fix serial port permission denied errors on Linux](https://websistent.com/fix-serial-port-permission-denied-errors-linux/)
 
@@ -37,38 +37,17 @@ The nlink_parser package has been tested under [ROS] Kinetic and Ubuntu 16.04.
 
 To build from source, clone the latest version from this repository into your catkin workspace and compile the package using
 
-	cd catkin_workspace/src
-	git clone --recursive https://github.com/NooploopStudio/nlink_parser.git 
-	cd ../
-	catkin_make
+    cd catkin_workspace/src
+    git clone --recursive https://github.com/   NooploopStudionlink_parser.git 
+    cd ../
+    catkin_make
     source devel/setup.bash
-
 
 ### Unit Tests
 
 Run the unit tests with
 
-	catkin_make run_tests
-
-
-## Usage
-
-Run LinkTrack node with
-
-	roslaunch nlink_parser linktrack.launch
-
-Param
-   - **`port_name`** serial port name of the device. Default: `/dev/ttyUSB0`.
-   - **`baud_rate`** baud rate of the device. Default: `921600`.
-
-Run TOFSense node with
-
-	roslaunch nlink_parser tofsense.launch
-
-Param
-   - **`port_name`** serial port name of the device. Default: `/dev/ttyUSB0`.
-   - **`baud_rate`** baud rate of the device. Default: `921600`.
-   - **`inquire_mode`** if true, automatic query nodes and output them together. Default: `true`.
+    catkin_make run_tests
 
 ## Nodes
 
@@ -76,6 +55,19 @@ Param
 
 Read and unpack serial data from device.When a protocol passes verification, topic of it will be registered and published. 
 
+#### Usage
+
+Run with
+
+    roslaunch nlink_parser linktrack.launch
+
+Param
+   - **`port_name`** serial port name of the device. Default: `/dev/ttyUSB0`.
+   - **`baud_rate`** baud rate of the device. Default: `921600`.
+  
+Run msg converter for RVIZ and view it
+
+    roslaunch nlink_parser linktrack_rviz.launch
 
 #### Subscribed Topics
 
@@ -98,6 +90,17 @@ Read and unpack serial data from device.When a protocol passes verification, top
 ### tofsense
 
 same as linktrack. 
+
+#### Usage
+
+Run with
+
+    roslaunch nlink_parser tofsense.launch
+
+Param
+   - **`port_name`** serial port name of the device. Default: `/dev/ttyUSB0`.
+   - **`baud_rate`** baud rate of the device. Default: `921600`.
+   - **`inquire_mode`** if true, automatic query nodes and output them together. Default: `true`.
 
 #### Published Topics
 

@@ -1,0 +1,9 @@
+<launch>
+    <node pkg="nlink_parser" type="linktrack_rviz_converter" name="linktrack_rviz_converter0" output="screen" >
+        <param name="map_frame" value="/linktrack_map" />
+    </node>
+
+    <node pkg="tf" name="base2linktrack"  type="static_transform_publisher" args="0 0 0 0 0 0 1 /map /linktrack_map 100"/>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nlink_parser)/rviz/linktrack.rviz" />
+</launch>

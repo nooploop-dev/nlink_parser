@@ -63,6 +63,5 @@ bool NLT_ProtocolNodeFrameBase::updateLength(const uint8_t *data,
                                              size_t availableBytes) {
   if (availableBytes < 4)
     return false;
-  setLength(static_cast<size_t>(data[2] | data[3] << 8));
-  return true;
+  return setLength(static_cast<size_t>(data[2] | data[3] << 8));
 }
