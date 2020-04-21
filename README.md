@@ -35,7 +35,7 @@ The nlink_parser package has been tested under [ROS] Kinetic and Ubuntu 16.04.
 To build from source, clone the latest version from this repository into your catkin workspace and compile the package using
 
     cd catkin_workspace/src
-    git clone --recursive https://github.com/   NooploopStudionlink_parser.git 
+    git clone --recursive https://github.com/nooploop-dev/nlink_parser.git 
     cd ../
     catkin_make
     source devel/setup.bash
@@ -44,6 +44,7 @@ To build from source, clone the latest version from this repository into your ca
 
 Run the unit tests with
 
+    roscore
     catkin_make run_tests
 
 ## Nodes
@@ -106,8 +107,8 @@ Param
 
 
 ## Related Projects
-  - [nlink_unpack](https://github.com/NooploopStudio/nlink_unpack) Used for unpacking nlink protocols written in C.(submodule of this repository)
-  - [nlink_example](https://github.com/NooploopStudio/nlink_example) Example of how to use nlink_parser ROS package in another package.
+  - [nlink_unpack](https://github.com/nooploop-dev/nlink_unpack) Used for unpacking nlink protocols written in C.(submodule of this repository)
+  - [nlink_example](https://github.com/nooploop-dev/nlink_example) Example of how to use nlink_parser ROS package in another package.
 
 
 
