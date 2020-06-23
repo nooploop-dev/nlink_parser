@@ -12,7 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     std_msgs
     message_generation
-    serial
     )
 
 ## Generate messages in the 'msg' folder
@@ -30,6 +29,8 @@ add_message_files(
     LinktrackTagframe0.msg
     TofsenseCascade.msg
     TofsenseFrame0.msg
+    LinktrackAoaNode0.msg
+    LinktrackAoaNodeframe0.msg
     )
 
 ## Generate services in the 'srv' folder
@@ -85,11 +86,13 @@ add_library(${nutils}
     src/utils/nlink/nlink_unpack/nlink_linktrack_nodeframe3.c
     src/utils/nlink/tofsense_protocols.cpp
     src/utils/nlink/nlink_unpack/nlink_tofsense_frame0.c
+    src/utils/nlink/nlink_unpack/nlink_linktrack_aoa_nodeframe0.c
     src/utils/init_serial.cpp
     src/utils/nutils.cpp
 )
 target_link_libraries(${nutils}
   ${catkin_LIBRARIES}
+  serial
 )
 
 set(LINKTRACK_NAME "linktrack")
@@ -122,6 +125,17 @@ target_link_libraries(${TOFSENSE_NAME}
     ${nutils}
     )
 add_dependencies(${TOFSENSE_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+
+set(LINKTRACK_AOA_NAME "linktrack_aoa")
+add_executable(${LINKTRACK_AOA_NAME}
+    src/linktrack_aoa/init.cpp
+    src/linktrack_aoa/main.cpp
+    )
+target_link_libraries(${LINKTRACK_AOA_NAME}
+#    ${catkin_LIBRARIES}
+    ${nutils}
+    )
+add_dependencies(${LINKTRACK_AOA_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
 
 #############
