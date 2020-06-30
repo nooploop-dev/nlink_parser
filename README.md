@@ -3,7 +3,7 @@
 
 ## Overview
 
-This package is developed for [LinkTrack](https://www.nooploop.com/) and [TOFSense](https://www.nooploop.com/tofsense) written in C++, you can get the data from device you need directly without additional process.
+This package is developed for [LinkTrack](https://www.nooploop.com/) ,[LinkTrack-AOA](https://www.nooploop.com/linktrack-aoa) and [TOFSense](https://www.nooploop.com/tofsense) written in C++, you can get the data from device you need directly without additional process.
 
 Refer to [NLink document](http://ftp.nooploop.com/software/products/uwb/doc/NLink_V1.3.pdf)
 
@@ -24,9 +24,7 @@ The nlink_parser package has been tested under [ROS] Kinetic and Ubuntu 16.04.
 #### Dependencies
 
 - [Robot Operating System (ROS)](http://wiki.ros.org) (middleware for robotics),
-- ros-serial
-
-      sudo apt-get install ros-kinetic-serial
+- [Serial Library](https://github.com/nooploop-dev/serial.git)
 
     Please make sure you have the permission to read or write to serial device, refer to [Fix serial port permission denied errors on Linux](https://websistent.com/fix-serial-port-permission-denied-errors-linux/)
 
@@ -84,6 +82,32 @@ Run msg converter for RVIZ and view it
   - **`/nlink_linktrack_nodeframe3`** ([nlink_parser::LinktrackNodeframe3])
 
 
+### linktrack_aoa
+
+same as linktrack.
+
+#### Usage
+
+Run with
+
+    roslaunch nlink_parser linktrack_aoa.launch
+
+Param
+   - **`port_name`** serial port name of the device. Default: `/dev/ttyUSB0`.
+   - **`baud_rate`** baud rate of the device. Default: `921600`.
+  
+#### Subscribed Topics
+
+* **`/nlink_linktrack_data_transmission`** ([std_msgs::String])
+
+	You can write data to the device by sending a message to this topic
+
+
+#### Published Topics
+
+  - **`/nlink_linktrack_nodeframe0`** ([nlink_parser::LinktrackNodeframe0])
+  - **`/nlink_linktrack_aoa_nodeframe0`** ([nlink_parser::LinktrackAoaNodeframe0])
+
 
 ### tofsense
 
@@ -114,5 +138,5 @@ Param
 
 ## Bugs & Feature Requests
 
-Please report bugs and request features using the [Issue Tracker](https://github.com/NooploopStudio/nlink_parser/issues).
+Please report bugs and request features using the [Issue Tracker](https://github.com/nooploop-dev/nlink_parser/issues).
 

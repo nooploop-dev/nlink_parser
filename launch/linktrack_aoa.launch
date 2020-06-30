@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="nlink_parser" type="linktrack_aoa" name="linktrack_aoa0" output="screen">
+        <param name="port_name" value="/dev/ttyUSB0" />
+        <param name="baud_rate" value="921600" />
+    </node>
+</launch>
