@@ -74,20 +74,19 @@ include_directories(
 
 set(nutils "nutils")
 add_library(${nutils}
-    src/utils/nlink/nprotocolbase.cpp
-    src/utils/nlink/nframe_extraction.cpp
-    src/utils/nlink/linktrack_protocols.cpp
-    src/utils/nlink/nlink_unpack/nlink_utils.c
-    src/utils/nlink/nlink_unpack/nlink_linktrack_anchorframe0.c
-    src/utils/nlink/nlink_unpack/nlink_linktrack_tagframe0.c
-    src/utils/nlink/nlink_unpack/nlink_linktrack_nodeframe0.c
-    src/utils/nlink/nlink_unpack/nlink_linktrack_nodeframe1.c
-    src/utils/nlink/nlink_unpack/nlink_linktrack_nodeframe2.c
-    src/utils/nlink/nlink_unpack/nlink_linktrack_nodeframe3.c
-    src/utils/nlink/tofsense_protocols.cpp
-    src/utils/nlink/nlink_unpack/nlink_tofsense_frame0.c
-    src/utils/nlink/nlink_unpack/nlink_linktrack_aoa_nodeframe0.c
+    src/utils/protocol_extracter/nprotocol_base.cpp
+    src/utils/protocol_extracter/nprotocol_extracter.cpp
+    src/utils/nlink_unpack/nlink_utils.c
+    src/utils/nlink_unpack/nlink_linktrack_anchorframe0.c
+    src/utils/nlink_unpack/nlink_linktrack_tagframe0.c
+    src/utils/nlink_unpack/nlink_linktrack_nodeframe0.c
+    src/utils/nlink_unpack/nlink_linktrack_nodeframe1.c
+    src/utils/nlink_unpack/nlink_linktrack_nodeframe2.c
+    src/utils/nlink_unpack/nlink_linktrack_nodeframe3.c
+    src/utils/nlink_unpack/nlink_tofsense_frame0.c
+    src/utils/nlink_unpack/nlink_linktrack_aoa_nodeframe0.c
     src/utils/init_serial.cpp
+    src/utils/nlink_protocol.cpp
     src/utils/nutils.cpp
 )
 target_link_libraries(${nutils}
@@ -99,6 +98,7 @@ set(LINKTRACK_NAME "linktrack")
 add_executable(${LINKTRACK_NAME}
     src/linktrack/init.cpp
     src/linktrack/main.cpp
+    src/linktrack/protocols.cpp
     )
 target_link_libraries(${LINKTRACK_NAME}
 #    ${catkin_LIBRARIES}
@@ -130,6 +130,7 @@ set(LINKTRACK_AOA_NAME "linktrack_aoa")
 add_executable(${LINKTRACK_AOA_NAME}
     src/linktrack_aoa/init.cpp
     src/linktrack_aoa/main.cpp
+    src/linktrack/protocols.cpp
     )
 target_link_libraries(${LINKTRACK_AOA_NAME}
 #    ${catkin_LIBRARIES}
@@ -147,7 +148,9 @@ if(${CATKIN_ENABLE_TESTING})
     ## Add gtest based cpp test target and link libraries
     catkin_add_gtest(${PROJECT_NAME}-test
         src/linktrack/init.cpp
+        src/linktrack/protocols.cpp
         src/tofsense/init.cpp
+        src/linktrack_aoa/init.cpp
         test/test_nlink_parser.cpp
         )
 endif()

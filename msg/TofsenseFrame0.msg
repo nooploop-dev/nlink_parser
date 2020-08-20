@@ -1,5 +1,5 @@
 uint8 id
-uint32 systemTime
-float32 distance
-uint8 distanceStatus
-uint16 signalStrength
+uint32 system_time
+float32 dis
+uint8 dis_status
+uint16 signal_strength

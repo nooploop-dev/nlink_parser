@@ -1,5 +1,7 @@
-﻿#include "init_serial.h"
+#include "init_serial.h"
+
 #include <ros/ros.h>
+
 #include <string>
 /*
 void enumerate_ports() {
@@ -18,7 +20,6 @@ void enumerate_ports() {
 
 void initSerial(serial::Serial *serial) {
   try {
-
     auto port_name =
         ros::param::param<std::string>("~port_name", "/dev/ttyUSB0");
     auto baud_rate = ros::param::param<int>("~baud_rate", 921600);

@@ -1,14 +1,14 @@
 uint8 role
 uint8 id
-uint32 localTime
-uint32 systemTime
+uint32 local_time
+uint32 system_time
 float32 voltage
-float32[3] pos
-float32[3] eop
-float32[3] vel
-float32[8] dis
-float32[3] angle
-float32[4] q
-float32[3] imuGyro
-float32[3] imuAcc
+float32[3] pos_3d
+float32[3] eop_3d
+float32[3] vel_3d
+float32[8] dis_arr
+float32[3] angle_3d
+float32[4] quaternion
+float32[3] imu_gyro_3d
+float32[3] imu_acc_3d
 

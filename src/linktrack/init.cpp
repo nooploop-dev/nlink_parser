@@ -1,247 +1,254 @@
 #include "init.h"
-#include <nlink/linktrack_protocols.h>
-#include <nutils.h>
+
+#include <nlink_parser/LinktrackAnchorframe0.h>
+#include <nlink_parser/LinktrackNodeframe0.h>
+#include <nlink_parser/LinktrackNodeframe1.h>
+#include <nlink_parser/LinktrackNodeframe2.h>
+#include <nlink_parser/LinktrackNodeframe3.h>
+#include <nlink_parser/LinktrackTagframe0.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 
-namespace LinkTrack {
+#include "nutils.h"
+#include "protocols.h"
 
-nlink_parser::LinktrackAnchorframe0 Init::msgAnchorFrame0Data_;
-nlink_parser::LinktrackTagframe0 Init::msgTagFrame0Data_;
-nlink_parser::LinktrackNodeframe0 Init::msgNodeFrame0Data_;
-nlink_parser::LinktrackNodeframe1 Init::msgNodeFrame1Data_;
-nlink_parser::LinktrackNodeframe2 Init::msgNodeFrame2Data_;
-nlink_parser::LinktrackNodeframe3 Init::msgNodeFrame3Data_;
+#define ARRAY_ASSIGN(DEST, SRC)                                        \
+  for (size_t _CNT = 0; _CNT < sizeof(SRC) / sizeof(SRC[0]); ++_CNT) { \
+    DEST[_CNT] = SRC[_CNT];                                            \
+  }
 
-static serial::Serial *serial_;
+namespace linktrack {
+nlink_parser::LinktrackAnchorframe0 g_msg_anchorframe0;
+nlink_parser::LinktrackTagframe0 g_msg_tagframe0;
+nlink_parser::LinktrackNodeframe0 g_msg_nodeframe0;
+nlink_parser::LinktrackNodeframe1 g_msg_nodeframe1;
+nlink_parser::LinktrackNodeframe2 g_msg_nodeframe2;
+nlink_parser::LinktrackNodeframe3 g_msg_nodeframe3;
 
-Init::Init(NFrameExtraction *frameExtraction, serial::Serial *serial) {
+serial::Serial *serial_;
+
+Init::Init(NProtocolExtracter *protocol_extraction, serial::Serial *serial) {
   serial_ = serial;
-  initDataTransmission();
-  initAnchorFrame0(frameExtraction);
-  initTagFrame0(frameExtraction);
-  initNodeFrame0(frameExtraction);
-  initNodeFrame1(frameExtraction);
-  initNodeFrame2(frameExtraction);
-  initNodeFrame3(frameExtraction);
+  InitDataTransmission();
+  initAnchorFrame0(protocol_extraction);
+  initTagFrame0(protocol_extraction);
+  InitNodeFrame0(protocol_extraction);
+  initNodeFrame1(protocol_extraction);
+  initNodeFrame2(protocol_extraction);
+  initNodeFrame3(protocol_extraction);
 }
 
-static void dtCallback(const std_msgs::String::ConstPtr &msg) {
-  if (serial_)
-    serial_->write(msg->data);
+static void DTCallback(const std_msgs::String::ConstPtr &msg) {
+  if (serial_) serial_->write(msg->data);
 }
 
-void Init::initDataTransmission() {
-  dtSub_ = nodeHandle_.subscribe("nlink_linktrack_data_transmission", 1000,
-                                 dtCallback);
+void Init::InitDataTransmission() {
+  dt_sub_ =
+      nh_.subscribe("nlink_linktrack_data_transmission", 1000, DTCallback);
 }
 
-void Init::initAnchorFrame0(NFrameExtraction *frameExtraction) {
+void Init::initAnchorFrame0(NProtocolExtracter *protocol_extraction) {
   auto protocol = new NLT_ProtocolAnchorFrame0;
-  frameExtraction->addProtocol(protocol);
-  protocol->setDataUseHandle([=] {
+  protocol_extraction->AddProtocol(protocol);
+  protocol->SetHandleDataCallback([=] {
     if (!publishers_[protocol]) {
       auto topic = "nlink_linktrack_anchorframe0";
       publishers_[protocol] =
-          nodeHandle_.advertise<nlink_parser::LinktrackAnchorframe0>(topic,
-                                                                     200);
-      topicadvertisedTip(topic);
+          nh_.advertise<nlink_parser::LinktrackAnchorframe0>(topic, 200);
+      TopicAdvertisedTip(topic);
     }
-    auto data = nltAnchorFrame0_.data;
-    //    nlink_parser::LinktrackAnchorframe0 msgAnchorFrame0Data_;
-    msgAnchorFrame0Data_.role = data.role;
-    msgAnchorFrame0Data_.id = data.id;
-    msgAnchorFrame0Data_.voltage = data.voltage;
-    msgAnchorFrame0Data_.localTime = data.localTime;
-    msgAnchorFrame0Data_.systemTime = data.systemTime;
-    auto &msgTags = msgAnchorFrame0Data_.tag;
-    const auto &tag = data.tag;
-    msgTags.clear();
-    decltype(msgAnchorFrame0Data_.tag)::value_type msgTag;
-    for (size_t i = 0, icount = data.validNodeCount; i < icount; ++i) {
-      msgTag.role = tag[i].role;
-      msgTag.id = tag[i].id;
-      ARRAY_ASSIGN(msgTag.pos, data.tag[i].pos)
-      ARRAY_ASSIGN(msgTag.dis, data.tag[i].dis)
-      msgTags.push_back(msgTag);
+    auto data = nlt_anchorframe0_.result;
+    g_msg_anchorframe0.role = data.role;
+    g_msg_anchorframe0.id = data.id;
+    g_msg_anchorframe0.voltage = data.voltage;
+    g_msg_anchorframe0.local_time = data.local_time;
+    g_msg_anchorframe0.system_time = data.system_time;
+    auto &msg_nodes = g_msg_anchorframe0.nodes;
+    msg_nodes.clear();
+    decltype(g_msg_anchorframe0.nodes)::value_type msg_node;
+    for (size_t i = 0, icount = data.valid_node_count; i < icount; ++i) {
+      auto node = data.nodes[i];
+      msg_node.role = node->role;
+      msg_node.id = node->id;
+      ARRAY_ASSIGN(msg_node.pos_3d, node->pos_3d)
+      ARRAY_ASSIGN(msg_node.dis_arr, node->dis_arr)
+      msg_nodes.push_back(msg_node);
     }
-    publishers_.at(protocol).publish(msgAnchorFrame0Data_);
+    publishers_.at(protocol).publish(g_msg_anchorframe0);
   });
 }
 
-void Init::initTagFrame0(NFrameExtraction *frameExtraction) {
+void Init::initTagFrame0(NProtocolExtracter *protocol_extraction) {
   auto protocol = new NLT_ProtocolTagFrame0;
-  frameExtraction->addProtocol(protocol);
-  protocol->setDataUseHandle([=] {
+  protocol_extraction->AddProtocol(protocol);
+  protocol->SetHandleDataCallback([=] {
     if (!publishers_[protocol]) {
       auto topic = "nlink_linktrack_tagframe0";
       publishers_[protocol] =
-          nodeHandle_.advertise<nlink_parser::LinktrackTagframe0>(topic, 200);
-      topicadvertisedTip(topic);
+          nh_.advertise<nlink_parser::LinktrackTagframe0>(topic, 200);
+      TopicAdvertisedTip(topic);
     }
 
-    const auto &data = nltTagFrame0_.data;
-    auto &msgData = msgTagFrame0Data_;
+    const auto &data = g_nlt_tagframe0.result;
+    auto &msg_data = g_msg_tagframe0;
 
-    msgData.role = data.role;
-    msgData.id = data.id;
-    msgData.localTime = data.localTime;
-    msgData.systemTime = data.systemTime;
-    msgData.voltage = data.voltage;
-    ARRAY_ASSIGN(msgData.pos, data.pos)
-    ARRAY_ASSIGN(msgData.eop, data.eop)
-    ARRAY_ASSIGN(msgData.vel, data.vel)
-    ARRAY_ASSIGN(msgData.dis, data.dis)
-    ARRAY_ASSIGN(msgData.imuGyro, data.imuGyro)
-    ARRAY_ASSIGN(msgData.imuAcc, data.imuAcc)
-    ARRAY_ASSIGN(msgData.angle, data.angle)
-    ARRAY_ASSIGN(msgData.q, data.q)
+    msg_data.role = data.role;
+    msg_data.id = data.id;
+    msg_data.local_time = data.local_time;
+    msg_data.system_time = data.system_time;
+    msg_data.voltage = data.voltage;
+    ARRAY_ASSIGN(msg_data.pos_3d, data.pos_3d)
+    ARRAY_ASSIGN(msg_data.eop_3d, data.eop_3d)
+    ARRAY_ASSIGN(msg_data.vel_3d, data.vel_3d)
+    ARRAY_ASSIGN(msg_data.dis_arr, data.dis_arr)
+    ARRAY_ASSIGN(msg_data.imu_gyro_3d, data.imu_gyro_3d)
+    ARRAY_ASSIGN(msg_data.imu_acc_3d, data.imu_acc_3d)
+    ARRAY_ASSIGN(msg_data.angle_3d, data.angle_3d)
+    ARRAY_ASSIGN(msg_data.quaternion, data.quaternion)
 
-    publishers_.at(protocol).publish(msgData);
+    publishers_.at(protocol).publish(msg_data);
   });
 }
 
-void Init::initNodeFrame0(NFrameExtraction *frameExtraction) {
+void Init::InitNodeFrame0(NProtocolExtracter *protocol_extraction) {
   auto protocol = new NLT_ProtocolNodeFrame0;
-  frameExtraction->addProtocol(protocol);
-  protocol->setDataUseHandle([=] {
+  protocol_extraction->AddProtocol(protocol);
+  protocol->SetHandleDataCallback([=] {
     if (!publishers_[protocol]) {
       auto topic = "nlink_linktrack_nodeframe0";
       publishers_[protocol] =
-          nodeHandle_.advertise<nlink_parser::LinktrackNodeframe0>(topic, 200);
-      topicadvertisedTip(topic);
+          nh_.advertise<nlink_parser::LinktrackNodeframe0>(topic, 200);
+      TopicAdvertisedTip(topic);
       ;
     }
-    const auto &data = nltNodeFrame0_.data;
-    auto &msgData = msgNodeFrame0Data_;
-    auto &msgNodes = msgData.node;
+    const auto &data = g_nlt_nodeframe0.result;
+    auto &msg_data = g_msg_nodeframe0;
+    auto &msg_nodes = msg_data.nodes;
 
-    msgData.role = data.role;
-    msgData.id = data.id;
+    msg_data.role = data.role;
+    msg_data.id = data.id;
 
-    msgNodes.resize(data.validNodeCount);
-    for (size_t i = 0; i < data.validNodeCount; ++i) {
-      auto &msgNode = msgNodes[i];
-      auto node = data.node[i];
-      msgNode.id = node->id;
-      msgNode.role = node->role;
-      msgNode.data.resize(node->dataLength);
-      memcpy(msgNode.data.data(), node->data, node->dataLength);
+    msg_nodes.resize(data.valid_node_count);
+    for (size_t i = 0; i < data.valid_node_count; ++i) {
+      auto &msg_node = msg_nodes[i];
+      auto node = data.nodes[i];
+      msg_node.id = node->id;
+      msg_node.role = node->role;
+      msg_node.data.resize(node->data_length);
+      memcpy(msg_node.data.data(), node->data, node->data_length);
     }
 
-    publishers_.at(protocol).publish(msgData);
+    publishers_.at(protocol).publish(msg_data);
   });
 }
 
-void Init::initNodeFrame1(NFrameExtraction *frameExtraction) {
+void Init::initNodeFrame1(NProtocolExtracter *protocol_extraction) {
   auto protocol = new NLT_ProtocolNodeFrame1;
-  frameExtraction->addProtocol(protocol);
-  protocol->setDataUseHandle([=] {
+  protocol_extraction->AddProtocol(protocol);
+  protocol->SetHandleDataCallback([=] {
     if (!publishers_[protocol]) {
       auto topic = "nlink_linktrack_nodeframe1";
       publishers_[protocol] =
-          nodeHandle_.advertise<nlink_parser::LinktrackNodeframe1>(topic, 200);
-      topicadvertisedTip(topic);
+          nh_.advertise<nlink_parser::LinktrackNodeframe1>(topic, 200);
+      TopicAdvertisedTip(topic);
     }
-    const auto &data = nltNodeFrame1_.data;
-    auto &msgData = msgNodeFrame1Data_;
-    auto &msgNodes = msgData.node;
+    const auto &data = g_nlt_nodeframe1.result;
+    auto &msg_data = g_msg_nodeframe1;
+    auto &msg_nodes = msg_data.nodes;
 
-    msgData.role = data.role;
-    msgData.id = data.id;
-    msgData.localTime = data.localTime;
-    msgData.systemTime = data.systemTime;
-    msgData.voltage = data.voltage;
+    msg_data.role = data.role;
+    msg_data.id = data.id;
+    msg_data.local_time = data.local_time;
+    msg_data.system_time = data.system_time;
+    msg_data.voltage = data.voltage;
 
-    msgNodes.resize(data.validNodeCount);
-    for (size_t i = 0; i < data.validNodeCount; ++i) {
-      auto &msgNode = msgNodes[i];
-      auto node = data.node[i];
-      msgNode.id = node->id;
-      msgNode.role = node->role;
-      ARRAY_ASSIGN(msgNode.pos, node->pos)
+    msg_nodes.resize(data.valid_node_count);
+    for (size_t i = 0; i < data.valid_node_count; ++i) {
+      auto &msg_node = msg_nodes[i];
+      auto node = data.nodes[i];
+      msg_node.id = node->id;
+      msg_node.role = node->role;
+      ARRAY_ASSIGN(msg_node.pos_3d, node->pos_3d)
     }
 
-    publishers_.at(protocol).publish(msgData);
+    publishers_.at(protocol).publish(msg_data);
   });
 }
 
-void Init::initNodeFrame2(NFrameExtraction *frameExtraction) {
-
+void Init::initNodeFrame2(NProtocolExtracter *protocol_extraction) {
   auto protocol = new NLT_ProtocolNodeFrame2;
-  frameExtraction->addProtocol(protocol);
-  protocol->setDataUseHandle([=] {
+  protocol_extraction->AddProtocol(protocol);
+  protocol->SetHandleDataCallback([=] {
     if (!publishers_[protocol]) {
       auto topic = "nlink_linktrack_nodeframe2";
       publishers_[protocol] =
-          nodeHandle_.advertise<nlink_parser::LinktrackNodeframe2>(topic, 200);
-      topicadvertisedTip(topic);
+          nh_.advertise<nlink_parser::LinktrackNodeframe2>(topic, 200);
+      TopicAdvertisedTip(topic);
     }
-    const auto &data = nltNodeFrame2_.data;
-    auto &msgData = msgNodeFrame2Data_;
-    auto &msgNodes = msgData.node;
+    const auto &data = g_nlt_nodeframe2.result;
+    auto &msg_data = g_msg_nodeframe2;
+    auto &msg_nodes = msg_data.nodes;
 
-    msgData.role = data.role;
-    msgData.id = data.id;
-    msgData.localTime = data.localTime;
-    msgData.systemTime = data.systemTime;
-    msgData.voltage = data.voltage;
-    ARRAY_ASSIGN(msgData.pos, data.pos)
-    ARRAY_ASSIGN(msgData.eop, data.eop)
-    ARRAY_ASSIGN(msgData.vel, data.vel)
-    ARRAY_ASSIGN(msgData.imuGyro, data.imuGyro)
-    ARRAY_ASSIGN(msgData.imuAcc, data.imuAcc)
-    ARRAY_ASSIGN(msgData.angle, data.angle)
-    ARRAY_ASSIGN(msgData.q, data.q)
+    msg_data.role = data.role;
+    msg_data.id = data.id;
+    msg_data.local_time = data.local_time;
+    msg_data.system_time = data.system_time;
+    msg_data.voltage = data.voltage;
+    ARRAY_ASSIGN(msg_data.pos_3d, data.pos_3d)
+    ARRAY_ASSIGN(msg_data.eop_3d, data.eop_3d)
+    ARRAY_ASSIGN(msg_data.vel_3d, data.vel_3d)
+    ARRAY_ASSIGN(msg_data.imu_gyro_3d, data.imu_gyro_3d)
+    ARRAY_ASSIGN(msg_data.imu_acc_3d, data.imu_acc_3d)
+    ARRAY_ASSIGN(msg_data.angle_3d, data.angle_3d)
+    ARRAY_ASSIGN(msg_data.quaternion, data.quaternion)
 
-    msgNodes.resize(data.validNodeCount);
-    for (size_t i = 0; i < data.validNodeCount; ++i) {
-      auto &msgNode = msgNodes[i];
-      auto node = data.node[i];
-      msgNode.id = node->id;
-      msgNode.role = node->role;
-      msgNode.dis = node->dis;
-      msgNode.fpRssi = node->fpRssi;
-      msgNode.rxRssi = node->rxRssi;
+    msg_nodes.resize(data.valid_node_count);
+    for (size_t i = 0; i < data.valid_node_count; ++i) {
+      auto &msg_node = msg_nodes[i];
+      auto node = data.nodes[i];
+      msg_node.id = node->id;
+      msg_node.role = node->role;
+      msg_node.dis = node->dis;
+      msg_node.fp_rssi = node->fp_rssi;
+      msg_node.rx_rssi = node->rx_rssi;
     }
 
-    publishers_.at(protocol).publish(msgData);
+    publishers_.at(protocol).publish(msg_data);
   });
 }
 
-void Init::initNodeFrame3(NFrameExtraction *frameExtraction) {
-
+void Init::initNodeFrame3(NProtocolExtracter *protocol_extraction) {
   auto protocol = new NLT_ProtocolNodeFrame3;
-  frameExtraction->addProtocol(protocol);
-  protocol->setDataUseHandle([=] {
+  protocol_extraction->AddProtocol(protocol);
+  protocol->SetHandleDataCallback([=] {
     if (!publishers_[protocol]) {
       auto topic = "nlink_linktrack_nodeframe3";
       publishers_[protocol] =
-          nodeHandle_.advertise<nlink_parser::LinktrackNodeframe3>(topic, 200);
-      topicadvertisedTip(topic);
+          nh_.advertise<nlink_parser::LinktrackNodeframe3>(topic, 200);
+      TopicAdvertisedTip(topic);
     }
-    const auto &data = nltNodeFrame3_.data;
-    auto &msgData = msgNodeFrame3Data_;
-    auto &msgNodes = msgData.node;
+    const auto &data = g_nlt_nodeframe3.result;
+    auto &msg_data = g_msg_nodeframe3;
+    auto &msg_nodes = msg_data.nodes;
 
-    msgData.role = data.role;
-    msgData.id = data.id;
-    msgData.localTime = data.localTime;
-    msgData.systemTime = data.systemTime;
-    msgData.voltage = data.voltage;
+    msg_data.role = data.role;
+    msg_data.id = data.id;
+    msg_data.local_time = data.local_time;
+    msg_data.system_time = data.system_time;
+    msg_data.voltage = data.voltage;
 
-    msgNodes.resize(data.validNodeCount);
-    for (size_t i = 0; i < data.validNodeCount; ++i) {
-      auto &msgNode = msgNodes[i];
-      auto node = data.node[i];
-      msgNode.id = node->id;
-      msgNode.role = node->role;
-      msgNode.dis = node->dis;
-      msgNode.fpRssi = node->fpRssi;
-      msgNode.rxRssi = node->rxRssi;
+    msg_nodes.resize(data.valid_node_count);
+    for (size_t i = 0; i < data.valid_node_count; ++i) {
+      auto &msg_node = msg_nodes[i];
+      auto node = data.nodes[i];
+      msg_node.id = node->id;
+      msg_node.role = node->role;
+      msg_node.dis = node->dis;
+      msg_node.fp_rssi = node->fp_rssi;
+      msg_node.rx_rssi = node->rx_rssi;
     }
 
-    publishers_.at(protocol).publish(msgData);
+    publishers_.at(protocol).publish(msg_data);
   });
 }
-} // namespace LinkTrack
+}  // namespace linktrack
