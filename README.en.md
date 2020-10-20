@@ -41,6 +41,7 @@ Products Supported
   - [protocol_extracter](#protocol_extracter)
 - [License](#license)
 - [Bugs & Feature Requests](#bugs--feature-requests)
+- [FAQ](#faq)
   
 ## Getting Started
 
@@ -170,3 +171,16 @@ The source code is released under a [BSD 3-Clause license](LICENSE).
 ## Bugs & Feature Requests
 
 Please report bugs and request features using the [Issue Tracker](https://github.com/nooploop-dev/nlink_parser/issues).
+
+## FAQ
+  - Run `rostopic echo...` to view the topic data, prompt "error: cannot load message class for... Are your messages built".
+  
+    If it has been compiled, please run `source {$ros_workspace}/devel/setup.bash` To add environment variables, where {$ros_workspace} represents the workspace directory where the current ROS package is located.
+
+  - Running node, prompts "error while loading shared libraries: libserial.so : Cannot open shared object file: No such file or directory"
+  
+    If it is confirmed that the serial port library has been installed according to the previous link, the compilation is normal, and only the runtime prompts that the library file cannot be found, try
+    1. Run `sudo gedit /etc/ld.so.conf.d/libc.conf`
+    2. If there is no `/usr/local/lib`, add it
+    3. Save the file and execute  `sudo ldconfig`
+    4. Restart the computer

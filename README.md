@@ -41,6 +41,7 @@
   - [protocol_extracter](#protocol_extracter)
 - [License](#license)
 - [Bugs & Feature Requests](#bugs--feature-requests)
+- [FAQ](#faq)
   
 
 ## Getting Started
@@ -172,3 +173,16 @@
 
 问题反馈及功能建议请使用 [Issue Tracker](https://github.com/nooploop-dev/nlink_parser/issues).
 
+## FAQ
+- 运行 `rostopic echo ...` 查看话题数据，提示"ERROR: Cannot load message class for ... Are your messages built
+  
+  如果已经编译通过，请运行  `source {$ros_workspace}/devel/setup.bash` 以添加环境变量，其中{$ros_workspace}表示当前ros包所在的工作空间目录。
+
+- 运行节点提示 "error while loading shared libraries: libserial.so: Cannot open shared object file: No such file or directory"
+  
+  如果确定已经按照前面链接安装了串口库，编译也正常，仅运行时提示找不到库文件，尝试
+
+    1. 运行 `sudo gedit /etc/ld.so.conf.d/libc.conf`
+    2. 如果没有 `/usr/local/lib` ,则进行添加
+    3. 保存文件，然后执行 `sudo ldconfig`
+    4. 重启电脑
