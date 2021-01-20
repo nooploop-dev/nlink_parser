@@ -6,6 +6,7 @@
 #include <nlink_parser/LinktrackNodeframe2.h>
 #include <nlink_parser/LinktrackNodeframe3.h>
 #include <nlink_parser/LinktrackTagframe0.h>
+#include <nlink_parser/LinktrackSettingframe0.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 
@@ -24,6 +25,7 @@ nlink_parser::LinktrackNodeframe0 g_msg_nodeframe0;
 nlink_parser::LinktrackNodeframe1 g_msg_nodeframe1;
 nlink_parser::LinktrackNodeframe2 g_msg_nodeframe2;
 nlink_parser::LinktrackNodeframe3 g_msg_nodeframe3;
+nlink_parser::LinktrackSettingframe0 g_msg_settingframe0;
 
 serial::Serial *serial_;
 
@@ -36,6 +38,7 @@ Init::Init(NProtocolExtracter *protocol_extraction, serial::Serial *serial) {
   initNodeFrame1(protocol_extraction);
   initNodeFrame2(protocol_extraction);
   initNodeFrame3(protocol_extraction);
+  initSettingFrame0(protocol_extraction);
 }
 
 static void DTCallback(const std_msgs::String::ConstPtr &msg) {
@@ -246,6 +249,36 @@ void Init::initNodeFrame3(NProtocolExtracter *protocol_extraction) {
       msg_node.dis = node->dis;
       msg_node.fp_rssi = node->fp_rssi;
       msg_node.rx_rssi = node->rx_rssi;
+    }
+
+    publishers_.at(protocol).publish(msg_data);
+  });
+}
+
+void Init::initSettingFrame0(NProtocolExtracter *protocol_extraction) {
+  auto protocol = new NLT_ProtocolSettingFrame0;
+  protocol_extraction->AddProtocol(protocol);
+  protocol->SetHandleDataCallback([=] {
+    if (!publishers_[protocol]) {
+      auto topic = "nlink_linktrack_settingframe0";
+      publishers_[protocol] =
+          nh_.advertise<nlink_parser::LinktrackSettingframe0>(topic, 200);
+      TopicAdvertisedTip(topic);
+    }
+    const auto &data = g_nlt_settingframe0.result;
+    auto &msg_data = g_msg_settingframe0;
+    auto &msg_nodes = msg_data.nodes;
+
+    msg_data.mix = data.mix;
+    msg_data.role = data.role;
+    msg_data.id = data.id;
+    msg_data.group = data.group;
+
+    msg_nodes.resize(data.valid_node_count);
+    for (size_t i = 0; i < data.valid_node_count; ++i) {
+      auto &msg_node = msg_nodes[i];
+      auto node = data.nodes[i];
+      ARRAY_ASSIGN(msg_node.ag_3d, node->ag_3d)
     }
 
     publishers_.at(protocol).publish(msg_data);

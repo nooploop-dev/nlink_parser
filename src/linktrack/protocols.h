@@ -8,6 +8,7 @@
 #include "nlink_unpack/nlink_linktrack_nodeframe2.h"
 #include "nlink_unpack/nlink_linktrack_nodeframe3.h"
 #include "nlink_unpack/nlink_linktrack_tagframe0.h"
+#include "nlink_unpack/nlink_linktrack_settingframe0.h" // for test
 
 class NLT_ProtocolAnchorFrame0 : public NLinkProtocol {
  public:
@@ -53,6 +54,14 @@ class NLT_ProtocolNodeFrame2 : public NLinkProtocolVLength {
 class NLT_ProtocolNodeFrame3 : public NLinkProtocolVLength {
  public:
   NLT_ProtocolNodeFrame3();
+
+ protected:
+  void UnpackFrameData(const uint8_t *data) override;
+};
+
+class NLT_ProtocolSettingFrame0 : public NLinkProtocol {
+ public:
+  NLT_ProtocolSettingFrame0();
 
  protected:
   void UnpackFrameData(const uint8_t *data) override;

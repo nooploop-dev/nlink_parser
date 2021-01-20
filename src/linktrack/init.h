@@ -24,6 +24,7 @@ class Init {
   void initNodeFrame1(NProtocolExtracter *protocol_extraction);
   void initNodeFrame2(NProtocolExtracter *protocol_extraction);
   void initNodeFrame3(NProtocolExtracter *protocol_extraction);
+  void initSettingFrame0(NProtocolExtracter *protocol_extraction);
 
   std::unordered_map<NProtocolBase *, ros::Publisher> publishers_;
   ros::NodeHandle nh_;
