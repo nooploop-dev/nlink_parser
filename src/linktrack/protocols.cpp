@@ -58,3 +58,12 @@ NLT_ProtocolNodeFrame3::NLT_ProtocolNodeFrame3()
 void NLT_ProtocolNodeFrame3::UnpackFrameData(const uint8_t *data) {
   g_nlt_nodeframe3.UnpackData(data, length());
 }
+
+NLT_ProtocolSettingFrame0::NLT_ProtocolSettingFrame0()
+    : NLinkProtocol(
+          true, g_nlt_settingframe0.fixed_part_size,
+          {g_nlt_settingframe0.frame_header, g_nlt_settingframe0.function_mark}) {}
+
+void NLT_ProtocolSettingFrame0::UnpackFrameData(const uint8_t *data) {
+  g_nlt_settingframe0.UnpackData(data, length());
+}

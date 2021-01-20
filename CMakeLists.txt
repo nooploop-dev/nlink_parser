@@ -11,7 +11,10 @@ add_definitions(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
     roscpp
     std_msgs
+    geometry_msgs
+    nav_msgs
     message_generation
+    serial
     )
 
 ## Generate messages in the 'msg' folder
@@ -27,6 +30,8 @@ add_message_files(
     LinktrackNodeframe3.msg
     LinktrackTag.msg
     LinktrackTagframe0.msg
+    LinktrackSetting.msg
+    LinktrackSettingframe0.msg
     TofsenseCascade.msg
     TofsenseFrame0.msg
     LinktrackAoaNode0.msg
@@ -51,12 +56,14 @@ add_message_files(
 generate_messages(
     DEPENDENCIES
     std_msgs
+    geometry_msgs
+    nav_msgs
     )
 
 catkin_package(
     #  INCLUDE_DIRS include
     #  LIBRARIES nlink
-    CATKIN_DEPENDS message_runtime
+    CATKIN_DEPENDS message_runtime serial
     #  DEPENDS system_lib
     )
 
@@ -83,6 +90,7 @@ add_library(${nutils}
     src/utils/nlink_unpack/nlink_linktrack_nodeframe1.c
     src/utils/nlink_unpack/nlink_linktrack_nodeframe2.c
     src/utils/nlink_unpack/nlink_linktrack_nodeframe3.c
+    src/utils/nlink_unpack/nlink_linktrack_settingframe0.c
     src/utils/nlink_unpack/nlink_tofsense_frame0.c
     src/utils/nlink_unpack/nlink_linktrack_aoa_nodeframe0.c
     src/utils/init_serial.cpp
