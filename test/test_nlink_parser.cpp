@@ -6,6 +6,8 @@
 #include <nlink_parser/LinktrackNodeframe1.h>
 #include <nlink_parser/LinktrackNodeframe2.h>
 #include <nlink_parser/LinktrackNodeframe3.h>
+#include <nlink_parser/LinktrackNodeframe5.h>
+#include <nlink_parser/LinktrackNodeframe6.h>
 #include <nlink_parser/LinktrackTagframe0.h>
 #include <nlink_parser/TofsenseFrame0.h>
 
@@ -33,6 +35,8 @@ namespace linktrack
   extern nlink_parser::LinktrackNodeframe1 g_msg_nodeframe1;
   extern nlink_parser::LinktrackNodeframe2 g_msg_nodeframe2;
   extern nlink_parser::LinktrackNodeframe3 g_msg_nodeframe3;
+  extern nlink_parser::LinktrackNodeframe5 g_msg_nodeframe5;
+  extern nlink_parser::LinktrackNodeframe6 g_msg_nodeframe6;
 } // namespace linktrack
 
 TEST(NLinkParser, linktrack)
@@ -250,6 +254,43 @@ TEST(NLinkParser, linktrack)
     EXPECT_NEAR(msgData.nodes[3].dis, 5.35f, kAbsError);
     EXPECT_NEAR(msgData.nodes[3].fp_rssi, -92, kAbsError);
     EXPECT_NEAR(msgData.nodes[3].rx_rssi, -80, kAbsError);
+  }
+
+  {
+    auto string =
+        "55 08 41 00 02 01 00 00 00 f8 11 07 00 6f d0 6e 00 00 00 01 02 5a 13 "
+        "04 01 00 00 00 00 22 0b 00 b5 9f01 01 00 00 00 a3 17 00 b6 a0 01 02 "
+        "00 00 00 88 1c 00 aa 9f 01 03 00 00 00 e6 14 00 b8 a0 ac";
+    auto data_length = NLink_StringToHex(string, data);
+    protocol_extraction.AddNewData(data, data_length);
+    auto &msgData = linktrack::g_msg_nodeframe5;
+    EXPECT_EQ(msgData.local_time, 463352);
+    EXPECT_EQ(msgData.system_time, 7262319);
+    EXPECT_NEAR(msgData.voltage, 4.954f, kAbsError);
+    EXPECT_NEAR(msgData.nodes[0].dis, 2.85f, kAbsError);
+    EXPECT_NEAR(msgData.nodes[0].fp_rssi, -90.5f, kAbsError);
+    EXPECT_NEAR(msgData.nodes[0].rx_rssi, -79.5f, kAbsError);
+    EXPECT_NEAR(msgData.nodes[1].dis, 6.051f, kAbsError);
+    EXPECT_NEAR(msgData.nodes[1].fp_rssi, -91, kAbsError);
+    EXPECT_NEAR(msgData.nodes[1].rx_rssi, -80, kAbsError);
+    EXPECT_NEAR(msgData.nodes[2].dis, 7.304f, kAbsError);
+    EXPECT_NEAR(msgData.nodes[2].fp_rssi, -85, kAbsError);
+    EXPECT_NEAR(msgData.nodes[2].rx_rssi, -79.5f, kAbsError);
+    EXPECT_NEAR(msgData.nodes[3].dis, 5.35f, kAbsError);
+    EXPECT_NEAR(msgData.nodes[3].fp_rssi, -92, kAbsError);
+    EXPECT_NEAR(msgData.nodes[3].rx_rssi, -80, kAbsError);
+  }
+
+  {
+    auto string = "55 09 4b 00 01 00 00 00 00 d1 2c c3 88 02 02 00 00 00 00 09 "
+                  "00 11 22 33 44 55 66 77 88 99 02 02 00 00 00 25 00 11 12 23 "
+                  "22 32 44 34 54 55 65 67 76 67 87 77 99 aa a2 13 45 57 65 56 "
+                  "56 56 56 57 78 43 33 34 44 44 44 44 46 76 1d";
+    auto data_length = NLink_StringToHex(string, data);
+    protocol_extraction.AddNewData(data, data_length);
+    auto &msgData = linktrack::g_msg_nodeframe6;
+    EXPECT_EQ(msgData.nodes[0].data.size(), 9);
+    EXPECT_EQ(msgData.nodes[1].data.size(), 37);
   }
 }
 

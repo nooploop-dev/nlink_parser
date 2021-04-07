@@ -40,8 +40,8 @@ namespace linktrack_aoa
   Init::Init(NProtocolExtracter *protocol_extraction, serial::Serial *serial)
   {
     g_serial = serial;
-    InitDataTransmission();
-    InitNodeFrame0(protocol_extraction);
+    initDataTransmission();
+    initNodeFrame0(protocol_extraction);
     InitAoaNodeFrame0(protocol_extraction);
   }
 
@@ -51,13 +51,13 @@ namespace linktrack_aoa
       g_serial->write(msg->data);
   }
 
-  void Init::InitDataTransmission()
+  void Init::initDataTransmission()
   {
     dt_sub_ =
         nh_.subscribe("nlink_linktrack_data_transmission", 1000, DTCallback);
   }
 
-  void Init::InitNodeFrame0(NProtocolExtracter *protocol_extraction)
+  void Init::initNodeFrame0(NProtocolExtracter *protocol_extraction)
   {
     auto protocol = new NLT_ProtocolNodeFrame0;
     protocol_extraction->AddProtocol(protocol);

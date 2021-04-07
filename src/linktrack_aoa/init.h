@@ -19,8 +19,8 @@ namespace linktrack_aoa
                   serial::Serial *serial);
 
   private:
-    void InitDataTransmission();
-    void InitNodeFrame0(NProtocolExtracter *protocol_extraction);
+    void initDataTransmission();
+    void initNodeFrame0(NProtocolExtracter *protocol_extraction);
     void InitAoaNodeFrame0(NProtocolExtracter *protocol_extraction);
     std::unordered_map<NProtocolBase *, ros::Publisher> publishers_;
     ros::NodeHandle nh_;

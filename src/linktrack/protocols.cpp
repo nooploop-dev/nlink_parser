@@ -77,3 +77,27 @@ void NLT_ProtocolNodeFrame3::UnpackFrameData(const uint8_t *data)
 {
   g_nlt_nodeframe3.UnpackData(data, length());
 }
+
+NLT_ProtocolNodeFrame5::NLT_ProtocolNodeFrame5()
+    : NLinkProtocolVLength(
+          true, g_nlt_nodeframe5.fixed_part_size,
+          {g_nlt_nodeframe5.frame_header, g_nlt_nodeframe5.function_mark})
+{
+}
+
+void NLT_ProtocolNodeFrame5::UnpackFrameData(const uint8_t *data)
+{
+  g_nlt_nodeframe5.UnpackData(data, length());
+}
+
+NLT_ProtocolNodeFrame6::NLT_ProtocolNodeFrame6()
+    : NLinkProtocolVLength(
+          true, g_nlt_nodeframe6.fixed_part_size,
+          {g_nlt_nodeframe6.frame_header, g_nlt_nodeframe6.function_mark})
+{
+}
+
+void NLT_ProtocolNodeFrame6::UnpackFrameData(const uint8_t *data)
+{
+  g_nlt_nodeframe6.UnpackData(data, length());
+}

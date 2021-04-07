@@ -31,6 +31,11 @@ add_message_files(
     TofsenseFrame0.msg
     LinktrackAoaNode0.msg
     LinktrackAoaNodeframe0.msg
+
+    LinktrackNode5.msg
+    LinktrackNodeframe5.msg
+    LinktrackNode6.msg
+    LinktrackNodeframe6.msg
     )
 
 ## Generate services in the 'srv' folder
@@ -83,6 +88,8 @@ add_library(${nutils}
     src/utils/nlink_unpack/nlink_linktrack_nodeframe1.c
     src/utils/nlink_unpack/nlink_linktrack_nodeframe2.c
     src/utils/nlink_unpack/nlink_linktrack_nodeframe3.c
+    src/utils/nlink_unpack/nlink_linktrack_nodeframe5.c
+    src/utils/nlink_unpack/nlink_linktrack_nodeframe6.c
     src/utils/nlink_unpack/nlink_tofsense_frame0.c
     src/utils/nlink_unpack/nlink_linktrack_aoa_nodeframe0.c
     src/utils/init_serial.cpp

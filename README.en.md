@@ -104,6 +104,8 @@ Published Topics
   - **`/nlink_linktrack_nodeframe1`** ([nlink_parser::LinktrackNodeframe1])
   - **`/nlink_linktrack_nodeframe2`** ([nlink_parser::LinktrackNodeframe2])
   - **`/nlink_linktrack_nodeframe3`** ([nlink_parser::LinktrackNodeframe3])
+  - **`/nlink_linktrack_nodeframe5`** ([nlink_parser::LinktrackNodeframe5])
+  - **`/nlink_linktrack_nodeframe6`** ([nlink_parser::LinktrackNodeframe6])
 
     If data is received from other nodes, then message will be released on `/nlink_linktrack_nodeframe0`
     

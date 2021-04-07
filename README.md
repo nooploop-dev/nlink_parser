@@ -105,6 +105,8 @@
   - **`/nlink_linktrack_nodeframe1`** ([nlink_parser::LinktrackNodeframe1])
   - **`/nlink_linktrack_nodeframe2`** ([nlink_parser::LinktrackNodeframe2])
   - **`/nlink_linktrack_nodeframe3`** ([nlink_parser::LinktrackNodeframe3])
+  - **`/nlink_linktrack_nodeframe5`** ([nlink_parser::LinktrackNodeframe5])
+  - **`/nlink_linktrack_nodeframe6`** ([nlink_parser::LinktrackNodeframe6])
 
     如果收到来自其他节点的数传数据，则 `/nlink_linktrack_nodeframe0` 话题将会发布消息
     

@@ -5,6 +5,8 @@
 #include <nlink_parser/LinktrackNodeframe1.h>
 #include <nlink_parser/LinktrackNodeframe2.h>
 #include <nlink_parser/LinktrackNodeframe3.h>
+#include <nlink_parser/LinktrackNodeframe5.h>
+#include <nlink_parser/LinktrackNodeframe6.h>
 #include <nlink_parser/LinktrackTagframe0.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
@@ -26,19 +28,23 @@ namespace linktrack
   nlink_parser::LinktrackNodeframe1 g_msg_nodeframe1;
   nlink_parser::LinktrackNodeframe2 g_msg_nodeframe2;
   nlink_parser::LinktrackNodeframe3 g_msg_nodeframe3;
+  nlink_parser::LinktrackNodeframe5 g_msg_nodeframe5;
+  nlink_parser::LinktrackNodeframe6 g_msg_nodeframe6;
 
   serial::Serial *serial_;
 
   Init::Init(NProtocolExtracter *protocol_extraction, serial::Serial *serial)
   {
     serial_ = serial;
-    InitDataTransmission();
+    initDataTransmission();
     initAnchorFrame0(protocol_extraction);
     initTagFrame0(protocol_extraction);
-    InitNodeFrame0(protocol_extraction);
+    initNodeFrame0(protocol_extraction);
     initNodeFrame1(protocol_extraction);
     initNodeFrame2(protocol_extraction);
     initNodeFrame3(protocol_extraction);
+    initNodeFrame5(protocol_extraction);
+    initNodeFrame6(protocol_extraction);
   }
 
   static void DTCallback(const std_msgs::String::ConstPtr &msg)
@@ -47,7 +53,7 @@ namespace linktrack
       serial_->write(msg->data);
   }
 
-  void Init::InitDataTransmission()
+  void Init::initDataTransmission()
   {
     dt_sub_ =
         nh_.subscribe("nlink_linktrack_data_transmission", 1000, DTCallback);
@@ -121,7 +127,7 @@ namespace linktrack
     });
   }
 
-  void Init::InitNodeFrame0(NProtocolExtracter *protocol_extraction)
+  void Init::initNodeFrame0(NProtocolExtracter *protocol_extraction)
   {
     auto protocol = new NLT_ProtocolNodeFrame0;
     protocol_extraction->AddProtocol(protocol);
@@ -274,4 +280,78 @@ namespace linktrack
       publishers_.at(protocol).publish(msg_data);
     });
   }
+
+  void Init::initNodeFrame5(NProtocolExtracter *protocol_extraction)
+  {
+    auto protocol = new NLT_ProtocolNodeFrame5;
+    protocol_extraction->AddProtocol(protocol);
+    protocol->SetHandleDataCallback([=] {
+      if (!publishers_[protocol])
+      {
+        auto topic = "nlink_linktrack_nodeframe5";
+        publishers_[protocol] =
+            nh_.advertise<nlink_parser::LinktrackNodeframe5>(topic, 200);
+        TopicAdvertisedTip(topic);
+      }
+      const auto &data = g_nlt_nodeframe5.result;
+      auto &msg_data = g_msg_nodeframe5;
+      auto &msg_nodes = msg_data.nodes;
+
+      msg_data.role = data.role;
+      msg_data.id = data.id;
+      msg_data.local_time = data.local_time;
+      msg_data.system_time = data.system_time;
+      msg_data.voltage = data.voltage;
+
+      msg_nodes.resize(data.valid_node_count);
+      for (size_t i = 0; i < data.valid_node_count; ++i)
+      {
+        auto &msg_node = msg_nodes[i];
+        auto node = data.nodes[i];
+        msg_node.id = node->id;
+        msg_node.role = node->role;
+        msg_node.dis = node->dis;
+        msg_node.fp_rssi = node->fp_rssi;
+        msg_node.rx_rssi = node->rx_rssi;
+      }
+
+      publishers_.at(protocol).publish(msg_data);
+    });
+  }
+
+  void Init::initNodeFrame6(NProtocolExtracter *protocol_extraction)
+  {
+    auto protocol = new NLT_ProtocolNodeFrame6;
+    protocol_extraction->AddProtocol(protocol);
+    protocol->SetHandleDataCallback([=] {
+      if (!publishers_[protocol])
+      {
+        auto topic = "nlink_linktrack_nodeframe6";
+        publishers_[protocol] =
+            nh_.advertise<nlink_parser::LinktrackNodeframe6>(topic, 200);
+        TopicAdvertisedTip(topic);
+        ;
+      }
+      const auto &data = g_nlt_nodeframe6.result;
+      auto &msg_data = g_msg_nodeframe6;
+      auto &msg_nodes = msg_data.nodes;
+
+      msg_data.role = data.role;
+      msg_data.id = data.id;
+
+      msg_nodes.resize(data.valid_node_count);
+      for (size_t i = 0; i < data.valid_node_count; ++i)
+      {
+        auto &msg_node = msg_nodes[i];
+        auto node = data.nodes[i];
+        msg_node.id = node->id;
+        msg_node.role = node->role;
+        msg_node.data.resize(node->data_length);
+        memcpy(msg_node.data.data(), node->data, node->data_length);
+      }
+
+      publishers_.at(protocol).publish(msg_data);
+    });
+  }
+
 } // namespace linktrack

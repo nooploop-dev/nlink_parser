@@ -19,13 +19,15 @@ namespace linktrack
                   serial::Serial *serial);
 
   private:
-    void InitDataTransmission();
+    void initDataTransmission();
     void initAnchorFrame0(NProtocolExtracter *protocol_extraction);
     void initTagFrame0(NProtocolExtracter *protocol_extraction);
-    void InitNodeFrame0(NProtocolExtracter *protocol_extraction);
+    void initNodeFrame0(NProtocolExtracter *protocol_extraction);
     void initNodeFrame1(NProtocolExtracter *protocol_extraction);
     void initNodeFrame2(NProtocolExtracter *protocol_extraction);
     void initNodeFrame3(NProtocolExtracter *protocol_extraction);
+    void initNodeFrame5(NProtocolExtracter *protocol_extraction);
+    void initNodeFrame6(NProtocolExtracter *protocol_extraction);
 
     std::unordered_map<NProtocolBase *, ros::Publisher> publishers_;
     ros::NodeHandle nh_;
