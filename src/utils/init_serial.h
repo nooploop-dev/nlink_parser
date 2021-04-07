@@ -4,4 +4,4 @@
 
 void initSerial(serial::Serial *serial);
 
-#endif  // INITSERIAL_H
+#endif // INITSERIAL_H

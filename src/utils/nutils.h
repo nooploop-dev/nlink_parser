@@ -3,4 +3,4 @@
 
 void TopicAdvertisedTip(const char *topic);
 
-#endif  // NUTILS_H
+#endif // NUTILS_H

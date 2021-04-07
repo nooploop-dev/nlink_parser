@@ -9,53 +9,59 @@
 #include "nlink_unpack/nlink_linktrack_nodeframe3.h"
 #include "nlink_unpack/nlink_linktrack_tagframe0.h"
 
-class NLT_ProtocolAnchorFrame0 : public NLinkProtocol {
- public:
+class NLT_ProtocolAnchorFrame0 : public NLinkProtocol
+{
+public:
   NLT_ProtocolAnchorFrame0();
 
- protected:
+protected:
   void UnpackFrameData(const uint8_t *data) override;
   bool Verify(const uint8_t *data) override;
 };
 
-class NLT_ProtocolTagFrame0 : public NLinkProtocol {
- public:
+class NLT_ProtocolTagFrame0 : public NLinkProtocol
+{
+public:
   NLT_ProtocolTagFrame0();
 
- protected:
+protected:
   void UnpackFrameData(const uint8_t *data) override;
 };
 
-class NLT_ProtocolNodeFrame0 : public NLinkProtocolVLength {
- public:
+class NLT_ProtocolNodeFrame0 : public NLinkProtocolVLength
+{
+public:
   NLT_ProtocolNodeFrame0();
 
- protected:
+protected:
   void UnpackFrameData(const uint8_t *data) override;
 };
 
-class NLT_ProtocolNodeFrame1 : public NLinkProtocolVLength {
- public:
+class NLT_ProtocolNodeFrame1 : public NLinkProtocolVLength
+{
+public:
   NLT_ProtocolNodeFrame1();
 
- protected:
+protected:
   void UnpackFrameData(const uint8_t *data) override;
 };
 
-class NLT_ProtocolNodeFrame2 : public NLinkProtocolVLength {
- public:
+class NLT_ProtocolNodeFrame2 : public NLinkProtocolVLength
+{
+public:
   NLT_ProtocolNodeFrame2();
 
- protected:
+protected:
   void UnpackFrameData(const uint8_t *data) override;
 };
 
-class NLT_ProtocolNodeFrame3 : public NLinkProtocolVLength {
- public:
+class NLT_ProtocolNodeFrame3 : public NLinkProtocolVLength
+{
+public:
   NLT_ProtocolNodeFrame3();
 
- protected:
+protected:
   void UnpackFrameData(const uint8_t *data) override;
 };
 
-#endif  // LINKTRACK_PROTOCOLS_H
+#endif // LINKTRACK_PROTOCOLS_H

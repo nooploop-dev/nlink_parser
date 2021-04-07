@@ -18,8 +18,10 @@ void enumerate_ports() {
 }
 */
 
-void initSerial(serial::Serial *serial) {
-  try {
+void initSerial(serial::Serial *serial)
+{
+  try
+  {
     auto port_name =
         ros::param::param<std::string>("~port_name", "/dev/ttyUSB0");
     auto baud_rate = ros::param::param<int>("~baud_rate", 921600);
@@ -33,13 +35,18 @@ void initSerial(serial::Serial *serial) {
     serial->setTimeout(timeout);
     serial->open();
 
-    if (serial->isOpen()) {
+    if (serial->isOpen())
+    {
       ROS_INFO("Serial port opened successfully, waiting for data.");
-    } else {
+    }
+    else
+    {
       ROS_ERROR("Failed to open serial port, please check and retry.");
       exit(EXIT_FAILURE);
     }
-  } catch (const std::exception &e) {
+  }
+  catch (const std::exception &e)
+  {
     ROS_ERROR("Unhandled Exception: %s", e.what());
     exit(EXIT_FAILURE);
   }
