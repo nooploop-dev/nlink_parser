@@ -133,6 +133,23 @@ target_link_libraries(${TOFSENSE_NAME}
     )
 add_dependencies(${TOFSENSE_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
+#############
+## Install ##
+#############
+install(DIRECTORY launch rviz
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+        )
+
+install(
+        TARGETS
+        ${nutils}
+        ${LINKTRACK_NAME}
+        ${LINKTRACK_RVIZ_NAME}
+        ${TOFSENSE_NAME}
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 set(LINKTRACK_AOA_NAME "linktrack_aoa")
 add_executable(${LINKTRACK_AOA_NAME}
     src/linktrack_aoa/init.cpp
