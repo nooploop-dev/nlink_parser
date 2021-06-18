@@ -4,6 +4,20 @@
 #include "init_serial.h"
 #include "protocol_extracter/nprotocol_extracter.h"
 
+#include <iostream>
+#include <iomanip>
+
+void printHexData(const std::string &data){
+if(!data.empty()){
+        std::cout << "data received: ";
+        for (int i = 0; i < data.size(); ++i)
+        {
+          std::cout << std::hex << std::setfill('0') << std::setw(2)  << int(uint8_t(data.at(i))) << " ";
+        }
+        std::cout << std::endl;
+      }
+}
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "linktrack_parser");
@@ -20,6 +34,7 @@ int main(int argc, char **argv)
     if (available_bytes)
     {
       serial.read(str_received, available_bytes);
+      //printHexData(str_received);
       protocol_extraction.AddNewData(str_received);
     }
     ros::spinOnce();
