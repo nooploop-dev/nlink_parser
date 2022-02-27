@@ -38,6 +38,8 @@ add_message_files(
     LinktrackNodeframe5.msg
     LinktrackNode6.msg
     LinktrackNodeframe6.msg
+    TofsenseMFrame0.msg
+    TofsenseMFrame0Pixel.msg
     )
 
 ## Generate services in the 'srv' folder
@@ -94,6 +96,7 @@ add_library(${nutils}
     src/utils/nlink_unpack/nlink_linktrack_nodeframe5.c
     src/utils/nlink_unpack/nlink_linktrack_nodeframe6.c
     src/utils/nlink_unpack/nlink_tofsense_frame0.c
+    src/utils/nlink_unpack/nlink_tofsensem_frame0.c
     src/utils/nlink_unpack/nlink_linktrack_aoa_nodeframe0.c
     src/utils/init_serial.cpp
     src/utils/nlink_protocol.cpp
@@ -136,6 +139,16 @@ target_link_libraries(${TOFSENSE_NAME}
     )
 add_dependencies(${TOFSENSE_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
+set(EXE_NAME "tofsensem")
+add_executable(${EXE_NAME}
+    src/tofsensem/init.cpp
+    src/tofsensem/main.cpp
+    )
+target_link_libraries(${EXE_NAME}
+    ${nutils}
+    )
+add_dependencies(${EXE_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+
 set(LINKTRACK_AOA_NAME "linktrack_aoa")
 add_executable(${LINKTRACK_AOA_NAME}
     src/linktrack_aoa/init.cpp
@@ -162,6 +175,7 @@ if(${CATKIN_ENABLE_TESTING})
         src/tofsense/init.cpp
         src/linktrack_aoa/init.cpp
         test/test_nlink_parser.cpp
+        src/tofsensem/init.cpp
         )
 endif()
 

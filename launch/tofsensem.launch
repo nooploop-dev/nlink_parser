@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="nlink_parser" type="tofsensem" name="tofsensem0" output="screen">
+    <param name="port_name" type="str" value="/dev/ttyUSB0" />
+    <param name="baud_rate" type="int" value="921600" />
+  </node>
+</launch>

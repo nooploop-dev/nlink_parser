@@ -2,6 +2,7 @@
 #include "../src/linktrack/init.h"
 #include "../src/linktrack_aoa/init.h"
 #include "../src/tofsense/init.h"
+#include "../src/tofsensem/init.h"
 #include <gtest/gtest.h>
 #include <nlink_parser/LinktrackAnchorframe0.h>
 #include <nlink_parser/LinktrackAoaNodeframe0.h>
@@ -14,6 +15,7 @@
 #include <nlink_parser/LinktrackNodeframe6.h>
 #include <nlink_parser/LinktrackTagframe0.h>
 #include <nlink_parser/TofsenseFrame0.h>
+#include <nlink_parser/TofsenseMFrame0.h>
 #include <vector>
 
 static const double kAbsError = 0.001;
@@ -375,6 +377,70 @@ TEST(NLinkParser, tofsense)
   EXPECT_EQ(msg.dis_status, 0);
   EXPECT_EQ(msg.signal_strength, 8);
   EXPECT_EQ(msg.range_precision, 255);
+}
+
+namespace tofsensem
+{
+  extern nlink_parser::TofsenseMFrame0 g_msg_tofmframe0;
+}
+
+TEST(NLinkParser, tofsensem)
+{
+  NProtocolExtracter protocol_extraction;
+  tofsensem::Init init(&protocol_extraction);
+
+  uint8_t data[1024];
+  auto string =
+      "57 01 ff 00 13 c9 00 00 40 40 36 11 05 2d 00 30 80 13 05 16 00 c0 62 14 "
+      "ff 09 00 98 21 19 ff 04 00 28 76 07 ff 08 00 38 20 07 ff 06 00 00 59 06 "
+      "ff 08 00 c8 c0 12 ff 1f 00 f8 3b 12 05 27 00 a8 e3 14 05 1c 00 58 08 18 "
+      "05 15 00 d8 34 1b 05 09 00 58 43 23 ff 0a 00 18 18 25 04 04 00 e0 04 07 "
+      "ff 06 00 90 41 06 ff 07 00 48 7c 13 05 25 00 98 33 16 05 15 00 78 cd 19 "
+      "05 0c 00 f0 9b 1e ff 09 00 e0 c1 26 ff 0b 00 80 d7 25 05 08 00 a0 31 24 "
+      "05 09 00 38 78 22 05 06 00 98 bc 14 05 1b 00 48 5e 18 05 13 00 c8 84 1c "
+      "05 08 00 08 68 26 05 07 00 58 b4 25 05 0b 00 80 dd 24 05 08 00 90 0a 24 "
+      "05 0d 00 e8 56 07 05 16 00 f0 d1 15 05 1b 00 18 dd 19 05 0e 00 e8 37 21 "
+      "04 07 00 d0 23 25 05 08 00 b0 52 25 05 08 00 70 39 24 05 0e 00 80 e9 22 "
+      "05 0c 00 d0 5a 07 05 31 00 c8 a8 16 05 0d 00 18 54 1b 05 0c 00 60 18 23 "
+      "0a 0a 00 f0 77 24 05 08 00 10 cc 23 05 0c 00 98 62 23 05 0f 00 f0 06 22 "
+      "05 11 00 a8 37 07 05 46 00 b8 69 1a 05 0b 00 30 c1 1d 0a 0d 00 68 64 24 "
+      "ff 0d 00 b0 58 24 05 08 00 28 4b 23 05 0d 00 b0 e7 21 05 12 00 38 01 21 "
+      "05 0f 00 c8 08 07 05 44 00 18 dd 19 09 0a 00 38 6c 24 05 08 00 58 c0 23 "
+      "05 0b 00 90 10 23 05 0c 00 a0 c0 21 05 0c 00 b8 3f 21 05 0c 00 a0 49 20 "
+      "05 10 00 e0 04 07 05 32 00 ff ff ff ff ff ff 67";
+  std::vector<float> vals{
+      0,   51475, 1128, 5,   45, 1278, 5,   22, 1336, 255, 9,  1647,
+      255, 4,     489,  255, 8,  467,  255, 6,  416,  255, 8,  1229,
+      255, 31,    1195, 5,   39, 1369, 5,   28, 1575, 5,   21, 1783,
+      5,   9,     2311, 255, 10, 2431, 4,   4,  460,  255, 6,  410,
+      255, 7,     1277, 5,   37, 1455, 5,   21, 1691, 5,   12, 2006,
+      255, 9,     2540, 255, 11, 2480, 5,   8,  2372, 5,   9,  2259,
+      5,   6,     1359, 5,   27, 1597, 5,   19, 1869, 5,   8,  2517,
+      5,   7,     2471, 5,   11, 2416, 5,   8,  2362, 5,   13, 481,
+      5,   22,    1430, 5,   27, 1695, 5,   14, 2177, 4,   7,  2434,
+      5,   8,     2446, 5,   8,  2374, 5,   14, 2288, 5,   12, 482,
+      5,   49,    1485, 5,   13, 1791, 5,   12, 2300, 10,  10, 2390,
+      5,   8,     2346, 5,   12, 2319, 5,   15, 2230, 5,   17, 473,
+      5,   70,    1731, 5,   11, 1950, 10,  13, 2385, 255, 13, 2382,
+      5,   8,     2313, 5,   13, 2222, 5,   18, 2163, 5,   15, 461,
+      5,   68,    1695, 9,   10, 2387, 5,   8,  2343, 5,   11, 2298,
+      5,   12,    2212, 5,   12, 2179, 5,   12, 2116, 5,   16, 460,
+      5,   50};
+  int val_cnt = -1;
+  auto next_val = [&vals, &val_cnt]() { return vals[++val_cnt]; };
+  auto data_length = NLink_StringToHex(string, data);
+  protocol_extraction.AddNewData(data, data_length);
+
+  auto &msg = tofsensem::g_msg_tofmframe0;
+  EXPECT_EQ(msg.id, next_val());
+  EXPECT_EQ(msg.system_time, next_val());
+  for (int i = 0; i < msg.pixels.size(); ++i)
+  {
+    const auto &pixel = msg.pixels.at(i);
+    EXPECT_NEAR(pixel.dis, next_val(), kAbsError);
+    EXPECT_NEAR(pixel.dis_status, next_val(), kAbsError);
+    EXPECT_NEAR(pixel.signal_strength, next_val(), kAbsError);
+  }
 }
 
 namespace linktrack_aoa
