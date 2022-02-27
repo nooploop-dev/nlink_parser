@@ -54,49 +54,53 @@ namespace tofsense
   {
     static auto protocol_frame0_ = new NTS_ProtocolFrame0;
     protocol_extraction->AddProtocol(protocol_frame0_);
-    protocol_frame0_->SetHandleDataCallback([=] {
-      if (!publishers_[protocol_frame0_])
-      {
-        ros::NodeHandle nh_;
-        if (is_inquire_mode_)
+    protocol_frame0_->SetHandleDataCallback(
+        [=]
         {
-          auto topic = "nlink_tofsense_cascade";
-          publishers_[protocol_frame0_] =
-              nh_.advertise<nlink_parser::TofsenseCascade>(topic, 50);
-          TopicAdvertisedTip(topic);
-        }
-        else
-        {
-          auto topic = "nlink_tofsense_frame0";
-          publishers_[protocol_frame0_] =
-              nh_.advertise<nlink_parser::TofsenseFrame0>(topic, 50);
-          TopicAdvertisedTip(topic);
-        }
-      }
+          if (!publishers_[protocol_frame0_])
+          {
+            ros::NodeHandle nh_;
+            if (is_inquire_mode_)
+            {
+              auto topic = "nlink_tofsense_cascade";
+              publishers_[protocol_frame0_] =
+                  nh_.advertise<nlink_parser::TofsenseCascade>(topic, 50);
+              TopicAdvertisedTip(topic);
+            }
+            else
+            {
+              auto topic = "nlink_tofsense_frame0";
+              publishers_[protocol_frame0_] =
+                  nh_.advertise<nlink_parser::TofsenseFrame0>(topic, 50);
+              TopicAdvertisedTip(topic);
+            }
+          }
 
-      const auto &data = g_nts_frame0.result;
+          const auto &data = g_nts_frame0.result;
 
-      g_msg_frame0.id = data.id;
-      g_msg_frame0.system_time = data.system_time;
-      g_msg_frame0.dis = data.dis;
-      g_msg_frame0.dis_status = data.dis_status;
-      g_msg_frame0.signal_strength = data.signal_strength;
+          g_msg_frame0.id = data.id;
+          g_msg_frame0.system_time = data.system_time;
+          g_msg_frame0.dis = data.dis;
+          g_msg_frame0.dis_status = data.dis_status;
+          g_msg_frame0.signal_strength = data.signal_strength;
+          g_msg_frame0.range_precision = data.range_precision;
 
-      if (is_inquire_mode_)
-      {
-        frame0_map_[data.id] = g_msg_frame0;
-      }
-      else
-      {
-        publishers_.at(protocol_frame0_).publish(g_msg_frame0);
-      }
-    });
+          if (is_inquire_mode_)
+          {
+            frame0_map_[data.id] = g_msg_frame0;
+          }
+          else
+          {
+            publishers_.at(protocol_frame0_).publish(g_msg_frame0);
+          }
+        });
 
     if (is_inquire_mode_)
     {
       timer_scan_ = nh_.createTimer(
           ros::Duration(1.0 / frequency_),
-          [=](const ros::TimerEvent &) {
+          [=](const ros::TimerEvent &)
+          {
             frame0_map_.clear();
             node_index_ = 0;
             timer_read_.start();
@@ -104,7 +108,8 @@ namespace tofsense
           false, true);
       timer_read_ = nh_.createTimer(
           ros::Duration(0.006),
-          [=](const ros::TimerEvent &) {
+          [=](const ros::TimerEvent &)
+          {
             if (node_index_ >= 8)
             {
               if (!frame0_map_.empty())

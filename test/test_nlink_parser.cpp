@@ -315,6 +315,7 @@ TEST(NLinkParser, tofsense)
   EXPECT_NEAR(msg.dis, 0.64, kAbsError);
   EXPECT_EQ(msg.dis_status, 0);
   EXPECT_EQ(msg.signal_strength, 8);
+  EXPECT_EQ(msg.range_precision, 255);
 }
 
 namespace linktrack_aoa
