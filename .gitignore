@@ -1,1 +1,3 @@
 *.txt.user
+.vscode
+build
