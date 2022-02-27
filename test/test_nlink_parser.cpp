@@ -1,4 +1,7 @@
 // gtest
+#include "../src/linktrack/init.h"
+#include "../src/linktrack_aoa/init.h"
+#include "../src/tofsense/init.h"
 #include <gtest/gtest.h>
 #include <nlink_parser/LinktrackAnchorframe0.h>
 #include <nlink_parser/LinktrackAoaNodeframe0.h>
@@ -6,14 +9,12 @@
 #include <nlink_parser/LinktrackNodeframe1.h>
 #include <nlink_parser/LinktrackNodeframe2.h>
 #include <nlink_parser/LinktrackNodeframe3.h>
+#include <nlink_parser/LinktrackNodeframe4.h>
 #include <nlink_parser/LinktrackNodeframe5.h>
 #include <nlink_parser/LinktrackNodeframe6.h>
 #include <nlink_parser/LinktrackTagframe0.h>
 #include <nlink_parser/TofsenseFrame0.h>
-
-#include "../src/linktrack/init.h"
-#include "../src/linktrack_aoa/init.h"
-#include "../src/tofsense/init.h"
+#include <vector>
 
 static const double kAbsError = 0.001;
 
@@ -35,6 +36,7 @@ namespace linktrack
   extern nlink_parser::LinktrackNodeframe1 g_msg_nodeframe1;
   extern nlink_parser::LinktrackNodeframe2 g_msg_nodeframe2;
   extern nlink_parser::LinktrackNodeframe3 g_msg_nodeframe3;
+  extern nlink_parser::LinktrackNodeframe4 g_msg_nodeframe4;
   extern nlink_parser::LinktrackNodeframe5 g_msg_nodeframe5;
   extern nlink_parser::LinktrackNodeframe6 g_msg_nodeframe6;
 } // namespace linktrack
@@ -255,7 +257,64 @@ TEST(NLinkParser, linktrack)
     EXPECT_NEAR(msgData.nodes[3].fp_rssi, -92, kAbsError);
     EXPECT_NEAR(msgData.nodes[3].rx_rssi, -80, kAbsError);
   }
+  {
+    auto string =
+        "55 06 40 00 01 03 8e 9d 01 00 8e 9d 01 00 ff ff 03 01 68 11 02 02 00 "
+        "00 58 04 00 8d 09 00 01 d4 06 00 02 f6 07 00 03 ad 06 00 05 00 00 46 "
+        "04 00 b8 0a 00 01 93 05 00 02 68 09 00 03 43 05 00 60 55 06 40 00 01 "
+        "03 c0 9d 01 00 c0 9d 01 00 ff ff 03 01 68 11 02 02 00 00 59 04 00 7d "
+        "09 00 01 d6 06 00 02 1f 08 00 03 0d 07 00 05 00 00 4d 04 00 d2 0a 00 "
+        "01 80 05 00 02 64 09 00 03 32 05 00 3b 55 06 40 00 01 03 f2 9d 01 00 "
+        "f2 9d 01 00 ff ff 03 01 58 11 02 02 00 00 59 04 00 6b 09 00 01 aa 06 "
+        "00 02 e6 07 00 03 ed 06 00 05 00 00 4d 04 00 ab 0a 00 01 82 05 00 02 "
+        "3d 09 00 03 45 05 00 bd 55 06 40 00 01 03 24 9e 01 00 24 9e 01 00 ff "
+        "ff 03 01 58 11 02 02 00 00 59 04 00 76 09 00 01 c1 06 00 02 3b 08 00 "
+        "03 e2 06 00 05 00 00 49 04 00 8d 0a 00 01 95 05 00 02 4a 09 00 03 32 "
+        "05 00 7b";
 
+    auto data_length = NLink_StringToHex(string, data);
+    protocol_extraction.AddNewData(data, data_length);
+    auto &msg_data = linktrack::g_msg_nodeframe4;
+    EXPECT_EQ(msg_data.local_time, 106020);
+    EXPECT_EQ(msg_data.system_time, 106020);
+    EXPECT_NEAR(msg_data.voltage, 4.44f, kAbsError);
+    {
+      const auto &tag = msg_data.tags[0];
+      EXPECT_EQ(tag.id, 2);
+      EXPECT_NEAR(tag.voltage, 4.45f, kAbsError);
+      EXPECT_EQ(tag.anchors.size(), 4);
+      std::vector<std::pair<uint8_t, float>> datas = {
+          {0, 2.422f},
+          {1, 1.729f},
+          {2, 2.107f},
+          {3, 1.762f},
+      };
+      for (int i = 0; i < tag.anchors.size(); ++i)
+      {
+        const auto &anchor = tag.anchors[i];
+        EXPECT_EQ(anchor.id, datas[i].first);
+        EXPECT_NEAR(anchor.dis, datas[i].second, kAbsError);
+      }
+    }
+    {
+      const auto &tag = msg_data.tags[1];
+      EXPECT_EQ(tag.id, 5);
+      EXPECT_NEAR(tag.voltage, 3.65f, kAbsError);
+      EXPECT_EQ(tag.anchors.size(), 4);
+      std::vector<std::pair<uint8_t, float>> datas = {
+          {0, 2.701f},
+          {1, 1.429f},
+          {2, 2.378f},
+          {3, 1.33f},
+      };
+      for (int i = 0; i < tag.anchors.size(); ++i)
+      {
+        const auto &anchor = tag.anchors[i];
+        EXPECT_EQ(anchor.id, datas[i].first);
+        EXPECT_NEAR(anchor.dis, datas[i].second, kAbsError);
+      }
+    }
+  }
   {
     auto string =
         "55 08 41 00 02 01 00 00 00 f8 11 07 00 6f d0 6e 00 00 00 01 02 5a 13 "

@@ -31,7 +31,9 @@ add_message_files(
     TofsenseFrame0.msg
     LinktrackAoaNode0.msg
     LinktrackAoaNodeframe0.msg
-
+    LinktrackNode4Anchor.msg
+    LinktrackNode4Tag.msg
+    LinktrackNodeframe4.msg
     LinktrackNode5.msg
     LinktrackNodeframe5.msg
     LinktrackNode6.msg
@@ -88,6 +90,7 @@ add_library(${nutils}
     src/utils/nlink_unpack/nlink_linktrack_nodeframe1.c
     src/utils/nlink_unpack/nlink_linktrack_nodeframe2.c
     src/utils/nlink_unpack/nlink_linktrack_nodeframe3.c
+    src/utils/nlink_unpack/nlink_linktrack_nodeframe4.c
     src/utils/nlink_unpack/nlink_linktrack_nodeframe5.c
     src/utils/nlink_unpack/nlink_linktrack_nodeframe6.c
     src/utils/nlink_unpack/nlink_tofsense_frame0.c
@@ -153,7 +156,7 @@ if(${CATKIN_ENABLE_TESTING})
     find_package(rostest REQUIRED)
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
     ## Add gtest based cpp test target and link libraries
-    catkin_add_gtest(${PROJECT_NAME}-test
+    catkin_add_gtest(${PROJECT_NAME}_test
         src/linktrack/init.cpp
         src/linktrack/protocols.cpp
         src/tofsense/init.cpp
@@ -162,6 +165,6 @@ if(${CATKIN_ENABLE_TESTING})
         )
 endif()
 
-if(TARGET ${PROJECT_NAME}-test)
-    target_link_libraries(${PROJECT_NAME}-test  ${nutils})
+if(TARGET ${PROJECT_NAME}_test)
+    target_link_libraries(${PROJECT_NAME}_test  ${nutils})
 endif()

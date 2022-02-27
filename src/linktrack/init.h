@@ -26,6 +26,7 @@ namespace linktrack
     void initNodeFrame1(NProtocolExtracter *protocol_extraction);
     void initNodeFrame2(NProtocolExtracter *protocol_extraction);
     void initNodeFrame3(NProtocolExtracter *protocol_extraction);
+    void initNodeFrame4(NProtocolExtracter *protocol_extraction);
     void initNodeFrame5(NProtocolExtracter *protocol_extraction);
     void initNodeFrame6(NProtocolExtracter *protocol_extraction);
 

@@ -7,6 +7,7 @@
 #include "nlink_unpack/nlink_linktrack_nodeframe1.h"
 #include "nlink_unpack/nlink_linktrack_nodeframe2.h"
 #include "nlink_unpack/nlink_linktrack_nodeframe3.h"
+#include "nlink_unpack/nlink_linktrack_nodeframe4.h"
 #include "nlink_unpack/nlink_linktrack_nodeframe5.h"
 #include "nlink_unpack/nlink_linktrack_nodeframe6.h"
 #include "nlink_unpack/nlink_linktrack_tagframe0.h"
@@ -61,6 +62,15 @@ class NLT_ProtocolNodeFrame3 : public NLinkProtocolVLength
 {
 public:
   NLT_ProtocolNodeFrame3();
+
+protected:
+  void UnpackFrameData(const uint8_t *data) override;
+};
+
+class NLT_ProtocolNodeFrame4 : public NLinkProtocolVLength
+{
+public:
+  NLT_ProtocolNodeFrame4();
 
 protected:
   void UnpackFrameData(const uint8_t *data) override;
