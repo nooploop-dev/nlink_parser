@@ -40,6 +40,8 @@ add_message_files(
     LinktrackNodeframe6.msg
     TofsenseMFrame0.msg
     TofsenseMFrame0Pixel.msg
+    IotFrame0.msg
+    IotFrame0Node.msg
     )
 
 ## Generate services in the 'srv' folder
@@ -98,6 +100,7 @@ add_library(${nutils}
     src/utils/nlink_unpack/nlink_tofsense_frame0.c
     src/utils/nlink_unpack/nlink_tofsensem_frame0.c
     src/utils/nlink_unpack/nlink_linktrack_aoa_nodeframe0.c
+    src/utils/nlink_unpack/nlink_iot_frame0.c
     src/utils/init_serial.cpp
     src/utils/nlink_protocol.cpp
     src/utils/nutils.cpp
@@ -149,17 +152,27 @@ target_link_libraries(${EXE_NAME}
     )
 add_dependencies(${EXE_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
-set(LINKTRACK_AOA_NAME "linktrack_aoa")
-add_executable(${LINKTRACK_AOA_NAME}
+set(EXE_NAME "linktrack_aoa")
+add_executable(${EXE_NAME}
     src/linktrack_aoa/init.cpp
     src/linktrack_aoa/main.cpp
     src/linktrack/protocols.cpp
     )
-target_link_libraries(${LINKTRACK_AOA_NAME}
+target_link_libraries(${EXE_NAME}
 #    ${catkin_LIBRARIES}
     ${nutils}
     )
-add_dependencies(${LINKTRACK_AOA_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${EXE_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+
+set(EXE_NAME "iot")
+add_executable(${EXE_NAME}
+    src/iot/init.cpp
+    src/iot/main.cpp
+    )
+target_link_libraries(${EXE_NAME}
+    ${nutils}
+    )
+add_dependencies(${EXE_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
 
 #############
@@ -176,6 +189,7 @@ if(${CATKIN_ENABLE_TESTING})
         src/linktrack_aoa/init.cpp
         test/test_nlink_parser.cpp
         src/tofsensem/init.cpp
+        src/iot/init.cpp
         )
 endif()
 

@@ -1,9 +1,11 @@
 // gtest
+#include "../src/iot/init.h"
 #include "../src/linktrack/init.h"
 #include "../src/linktrack_aoa/init.h"
 #include "../src/tofsense/init.h"
 #include "../src/tofsensem/init.h"
 #include <gtest/gtest.h>
+#include <nlink_parser/IotFrame0.h>
 #include <nlink_parser/LinktrackAnchorframe0.h>
 #include <nlink_parser/LinktrackAoaNodeframe0.h>
 #include <nlink_parser/LinktrackNodeframe0.h>
@@ -440,6 +442,49 @@ TEST(NLinkParser, tofsensem)
     EXPECT_NEAR(pixel.dis, next_val(), kAbsError);
     EXPECT_NEAR(pixel.dis_status, next_val(), kAbsError);
     EXPECT_NEAR(pixel.signal_strength, next_val(), kAbsError);
+  }
+}
+
+namespace iot
+{
+  extern nlink_parser::IotFrame0 g_msg_iotframe0;
+}
+
+TEST(NLinkParser, iot)
+{
+  NProtocolExtracter protocol_extraction;
+  iot::Init init(&protocol_extraction);
+
+  uint8_t data[1024];
+  auto string =
+      "55 01 52 00 6b 00 4a 00 62 00 03 60 00 00 2b ef ff 00 00 00 47 00 48 00 "
+      "ac 52 00 00 6e da 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 "
+      "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 "
+      "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 "
+      "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 "
+      "00 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00 00 00 00 00 00 00 "
+      "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 10";
+  std::vector<float> vals{
+      7012434, 6422602, 3, 0.096, -4.309, 0, 4718663, 172, 0.082, 55.918, 0,
+      0,       0,       0, 0,     0,      0, 0,       0,   0,     0,      0,
+      0,       0,       0, 0,     0,      0, 0,       0,   0,     0,      0,
+      0,       0,       0, 0,     0,      0, 0,       0,   0,     0,      0,
+      0,       0,       0, 0,     0,      0, 0};
+  int val_cnt = -1;
+  auto next_val = [&vals, &val_cnt]() { return vals[++val_cnt]; };
+  auto data_length = NLink_StringToHex(string, data);
+  protocol_extraction.AddNewData(data, data_length);
+
+  auto &msg = iot::g_msg_iotframe0;
+  EXPECT_NEAR(msg.uid, next_val(), kAbsError);
+  for (int i = 0; i < msg.nodes.size(); ++i)
+  {
+    const auto &node = msg.nodes.at(i);
+    EXPECT_NEAR(node.uid, next_val(), kAbsError);
+    EXPECT_NEAR(node.cnt, next_val(), kAbsError);
+    EXPECT_NEAR(node.dis, next_val(), kAbsError);
+    EXPECT_NEAR(node.aoa_angle_horizontal, next_val(), kAbsError);
+    EXPECT_NEAR(node.aoa_angle_vertical, next_val(), kAbsError);
   }
 }
 
