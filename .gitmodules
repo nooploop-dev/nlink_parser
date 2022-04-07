@@ -4,3 +4,6 @@
 [submodule "src/utils/nlink_unpack"]
 	path = src/utils/nlink_unpack
 	url = https://github.com/nooploop-dev/nlink_unpack.git
+[submodule "extern/serial"]
+	path = extern/serial
+	url = https://github.com/nooploop-dev/serial.git
