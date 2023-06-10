@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
 
   NProtocolExtracter extracter;
   tofsensem::Init init(&extracter);
-
+  ros::Rate loop_rate(1000);
   while (ros::ok()) {
     auto available_bytes = serial.available();
     std::string str_received;
@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     ros::spinOnce();
+    loop_rate.sleep();
   }
   return EXIT_SUCCESS;
 }

@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 
   NProtocolExtracter extracter;
   tofsense::Init init(&extracter, &serial);
-
+  ros::Rate loop_rate(1000);
   while (ros::ok()) {
     auto available_bytes = serial.available();
     std::string str_received;
@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
       extracter.AddNewData(str_received);
     }
     ros::spinOnce();
+    loop_rate.sleep();
   }
   return EXIT_SUCCESS;
 }
