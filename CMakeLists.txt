@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 add_subdirectory(extern/serial)
+include_directories(extern/serial/include)
 
 # find_package(serial CONFIG REQUIRED)
 
