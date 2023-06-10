@@ -11,4 +11,3 @@ float32[3] angle_3d
 float32[4] quaternion
 float32[3] imu_gyro_3d
 float32[3] imu_acc_3d
-

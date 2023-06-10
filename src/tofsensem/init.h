@@ -6,18 +6,16 @@
 #include <ros/ros.h>
 #include <unordered_map>
 
-namespace tofsensem
-{
-  class Init
-  {
-  public:
-    explicit Init(NProtocolExtracter *protocol_extraction);
+namespace tofsensem {
+class Init {
+public:
+  explicit Init(NProtocolExtracter *protocol_extraction);
 
-  private:
-    void InitFrame0(NProtocolExtracter *protocol_extraction);
-    std::unordered_map<NProtocolBase *, ros::Publisher> publishers_;
-    ros::NodeHandle nh_;
-  };
+private:
+  void InitFrame0(NProtocolExtracter *protocol_extraction);
+  std::unordered_map<NProtocolBase *, ros::Publisher> publishers_;
+  ros::NodeHandle nh_;
+};
 
 } // namespace tofsensem
 #endif // TOFSENSEMINIT_H

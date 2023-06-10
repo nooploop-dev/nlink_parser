@@ -12,28 +12,23 @@
 
 #include "nutils.h"
 
-namespace
-{
-  std::string frameId;
+namespace {
+std::string frameId;
 
-  struct PosePair
-  {
-    ros::Publisher publisher;
-    geometry_msgs::PoseStamped msg;
-    inline void publish() { publisher.publish(msg); }
-  };
+struct PosePair {
+  ros::Publisher publisher;
+  geometry_msgs::PoseStamped msg;
+  inline void publish() { publisher.publish(msg); }
+};
 } // namespace
 
-void Anchorframe0Callback(const nlink_parser::LinktrackAnchorframe0 &msg)
-{
+void Anchorframe0Callback(const nlink_parser::LinktrackAnchorframe0 &msg) {
   static ros::Publisher publisher;
   static std::map<uint8_t, PosePair> poses;
-  for (const auto &node : msg.nodes)
-  {
+  for (const auto &node : msg.nodes) {
     auto id = node.id;
 
-    if (!poses.count(id))
-    {
+    if (!poses.count(id)) {
       std::ostringstream string_stream;
       string_stream << "nlt_anchorframe0_pose_node" << static_cast<int>(id);
       auto topic = string_stream.str();
@@ -57,16 +52,13 @@ void Anchorframe0Callback(const nlink_parser::LinktrackAnchorframe0 &msg)
   }
 }
 
-void Nodeframe1Callback(const nlink_parser::LinktrackNodeframe1 &msg)
-{
+void Nodeframe1Callback(const nlink_parser::LinktrackNodeframe1 &msg) {
   static ros::Publisher publisher;
   static std::map<uint8_t, PosePair> poses;
-  for (const auto &node : msg.nodes)
-  {
+  for (const auto &node : msg.nodes) {
     auto id = node.id;
 
-    if (!poses.count(id))
-    {
+    if (!poses.count(id)) {
       std::ostringstream string_stream;
       string_stream << "nlt_nodeframe1_pose_node" << static_cast<int>(id);
       auto topic = string_stream.str();
@@ -90,11 +82,9 @@ void Nodeframe1Callback(const nlink_parser::LinktrackNodeframe1 &msg)
   }
 }
 
-void Tagframe0Callback(const nlink_parser::LinktrackTagframe0 &msg)
-{
+void Tagframe0Callback(const nlink_parser::LinktrackTagframe0 &msg) {
   static PosePair *pose = nullptr;
-  if (!pose)
-  {
+  if (!pose) {
     pose = new PosePair;
     auto topic = "nlt_tagframe0_pose";
     pose->publisher =
@@ -115,11 +105,9 @@ void Tagframe0Callback(const nlink_parser::LinktrackTagframe0 &msg)
   pose->publish();
 }
 
-void Nodeframe2Callback(const nlink_parser::LinktrackNodeframe2 &msg)
-{
+void Nodeframe2Callback(const nlink_parser::LinktrackNodeframe2 &msg) {
   static PosePair *pose = nullptr;
-  if (!pose)
-  {
+  if (!pose) {
     pose = new PosePair;
     auto topic = "nlt_nodeframe2_pose";
     pose->publisher =
@@ -140,8 +128,7 @@ void Nodeframe2Callback(const nlink_parser::LinktrackNodeframe2 &msg)
   pose->publish();
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   ros::init(argc, argv, "linktrack_example");
   ros::NodeHandle nh;
 
