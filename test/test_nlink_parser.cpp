@@ -26,27 +26,24 @@ static const double kAbsError = 0.001;
   {                                                                            \
     const auto &ACTUAL = SRC;                                                  \
     const auto &EXPECTED = std::vector<float> DEST;                            \
-    for (size_t _INDEX = 0; _INDEX < EXPECTED.size(); ++_INDEX)                \
-    {                                                                          \
+    for (size_t _INDEX = 0; _INDEX < EXPECTED.size(); ++_INDEX) {              \
       EXPECT_NEAR(EXPECTED.at(_INDEX), ACTUAL.at(_INDEX), kAbsError);          \
     }                                                                          \
   }
 
-namespace linktrack
-{
-  extern nlink_parser::LinktrackAnchorframe0 g_msg_anchorframe0;
-  extern nlink_parser::LinktrackTagframe0 g_msg_tagframe0;
-  extern nlink_parser::LinktrackNodeframe0 g_msg_nodeframe0;
-  extern nlink_parser::LinktrackNodeframe1 g_msg_nodeframe1;
-  extern nlink_parser::LinktrackNodeframe2 g_msg_nodeframe2;
-  extern nlink_parser::LinktrackNodeframe3 g_msg_nodeframe3;
-  extern nlink_parser::LinktrackNodeframe4 g_msg_nodeframe4;
-  extern nlink_parser::LinktrackNodeframe5 g_msg_nodeframe5;
-  extern nlink_parser::LinktrackNodeframe6 g_msg_nodeframe6;
+namespace linktrack {
+extern nlink_parser::LinktrackAnchorframe0 g_msg_anchorframe0;
+extern nlink_parser::LinktrackTagframe0 g_msg_tagframe0;
+extern nlink_parser::LinktrackNodeframe0 g_msg_nodeframe0;
+extern nlink_parser::LinktrackNodeframe1 g_msg_nodeframe1;
+extern nlink_parser::LinktrackNodeframe2 g_msg_nodeframe2;
+extern nlink_parser::LinktrackNodeframe3 g_msg_nodeframe3;
+extern nlink_parser::LinktrackNodeframe4 g_msg_nodeframe4;
+extern nlink_parser::LinktrackNodeframe5 g_msg_nodeframe5;
+extern nlink_parser::LinktrackNodeframe6 g_msg_nodeframe6;
 } // namespace linktrack
 
-TEST(NLinkParser, linktrack)
-{
+TEST(NLinkParser, linktrack) {
   NProtocolExtracter protocol_extraction;
   linktrack::Init init(&protocol_extraction, nullptr);
   uint8_t data[1024];
@@ -293,8 +290,7 @@ TEST(NLinkParser, linktrack)
           {2, 2.107f},
           {3, 1.762f},
       };
-      for (int i = 0; i < tag.anchors.size(); ++i)
-      {
+      for (int i = 0; i < tag.anchors.size(); ++i) {
         const auto &anchor = tag.anchors[i];
         EXPECT_EQ(anchor.id, datas[i].first);
         EXPECT_NEAR(anchor.dis, datas[i].second, kAbsError);
@@ -311,8 +307,7 @@ TEST(NLinkParser, linktrack)
           {2, 2.378f},
           {3, 1.33f},
       };
-      for (int i = 0; i < tag.anchors.size(); ++i)
-      {
+      for (int i = 0; i < tag.anchors.size(); ++i) {
         const auto &anchor = tag.anchors[i];
         EXPECT_EQ(anchor.id, datas[i].first);
         EXPECT_NEAR(anchor.dis, datas[i].second, kAbsError);
@@ -357,13 +352,11 @@ TEST(NLinkParser, linktrack)
   }
 }
 
-namespace tofsense
-{
-  extern nlink_parser::TofsenseFrame0 g_msg_frame0;
+namespace tofsense {
+extern nlink_parser::TofsenseFrame0 g_msg_frame0;
 }
 
-TEST(NLinkParser, tofsense)
-{
+TEST(NLinkParser, tofsense) {
   NProtocolExtracter protocol_extraction;
   tofsense::Init init(&protocol_extraction, nullptr);
 
@@ -381,13 +374,11 @@ TEST(NLinkParser, tofsense)
   EXPECT_EQ(msg.range_precision, 255);
 }
 
-namespace tofsensem
-{
-  extern nlink_parser::TofsenseMFrame0 g_msg_tofmframe0;
+namespace tofsensem {
+extern nlink_parser::TofsenseMFrame0 g_msg_tofmframe0;
 }
 
-TEST(NLinkParser, tofsensem)
-{
+TEST(NLinkParser, tofsensem) {
   NProtocolExtracter protocol_extraction;
   tofsensem::Init init(&protocol_extraction);
 
@@ -436,8 +427,7 @@ TEST(NLinkParser, tofsensem)
   auto &msg = tofsensem::g_msg_tofmframe0;
   EXPECT_EQ(msg.id, next_val());
   EXPECT_EQ(msg.system_time, next_val());
-  for (int i = 0; i < msg.pixels.size(); ++i)
-  {
+  for (int i = 0; i < msg.pixels.size(); ++i) {
     const auto &pixel = msg.pixels.at(i);
     EXPECT_NEAR(pixel.dis, next_val(), kAbsError);
     EXPECT_NEAR(pixel.dis_status, next_val(), kAbsError);
@@ -445,13 +435,11 @@ TEST(NLinkParser, tofsensem)
   }
 }
 
-namespace iot
-{
-  extern nlink_parser::IotFrame0 g_msg_iotframe0;
+namespace iot {
+extern nlink_parser::IotFrame0 g_msg_iotframe0;
 }
 
-TEST(NLinkParser, iot)
-{
+TEST(NLinkParser, iot) {
   NProtocolExtracter protocol_extraction;
   iot::Init init(&protocol_extraction);
 
@@ -477,8 +465,7 @@ TEST(NLinkParser, iot)
 
   auto &msg = iot::g_msg_iotframe0;
   EXPECT_NEAR(msg.uid, next_val(), kAbsError);
-  for (int i = 0; i < msg.nodes.size(); ++i)
-  {
+  for (int i = 0; i < msg.nodes.size(); ++i) {
     const auto &node = msg.nodes.at(i);
     EXPECT_NEAR(node.uid, next_val(), kAbsError);
     EXPECT_NEAR(node.cnt, next_val(), kAbsError);
@@ -488,13 +475,11 @@ TEST(NLinkParser, iot)
   }
 }
 
-namespace linktrack_aoa
-{
-  extern nlink_parser::LinktrackAoaNodeframe0 g_msg_aoa_nodeframe0;
+namespace linktrack_aoa {
+extern nlink_parser::LinktrackAoaNodeframe0 g_msg_aoa_nodeframe0;
 }
 
-TEST(nlink_parser, linktrack_aoa)
-{
+TEST(nlink_parser, linktrack_aoa) {
   NProtocolExtracter protocol_extraction;
   linktrack_aoa::Init init(&protocol_extraction, nullptr);
 
@@ -529,8 +514,7 @@ TEST(nlink_parser, linktrack_aoa)
 }
 
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   ros::init(argc, argv, "test_nlink_parser");
   ros::NodeHandle nh;

@@ -37,10 +37,10 @@ Products Supported
   - [TOFSense](#tofsense)
 - [How to Subscribe Our Topic](#how-to-subscribe-our-topic)
 - [Submodule](#submodule)
-  - [nlink_unpack](#nlink_unpack)
-  - [protocol_extracter](#protocol_extracter)
+  - [nlink\_unpack](#nlink_unpack)
+  - [protocol\_extracter](#protocol_extracter)
 - [License](#license)
-- [Bugs & Feature Requests](#bugs--feature-requests)
+- [Bugs \& Feature Requests](#bugs--feature-requests)
 - [FAQ](#faq)
   
 ## Getting Started

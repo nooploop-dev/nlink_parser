@@ -4,13 +4,11 @@
 
 #include "protocol_extracter/nprotocol_base.h"
 
-class NLinkProtocol : public NProtocolBase
-{
+class NLinkProtocol : public NProtocolBase {
 public:
   using NProtocolBase::NProtocolBase;
 
-  void SetHandleDataCallback(std::function<void()> handle)
-  {
+  void SetHandleDataCallback(std::function<void()> handle) {
     HandleDataCallback_ = handle;
   }
 
@@ -23,8 +21,7 @@ private:
   std::function<void()> HandleDataCallback_;
 };
 
-class NLinkProtocolVLength : public NLinkProtocol
-{
+class NLinkProtocolVLength : public NLinkProtocol {
 public:
   using NLinkProtocol::NLinkProtocol;
 

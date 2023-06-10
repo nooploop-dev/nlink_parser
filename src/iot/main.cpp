@@ -6,8 +6,7 @@
 #include <chrono>
 #include <thread>
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   ros::init(argc, argv, "iot_parser");
   ros::NodeHandle nh;
   serial::Serial serial;
@@ -15,21 +14,16 @@ int main(int argc, char **argv)
 
   NProtocolExtracter extracter;
   iot::Init init(&extracter);
-
-  while (ros::ok())
-  {
+  ros::Rate loop_rate(1000);
+  while (ros::ok()) {
     auto available_bytes = serial.available();
     std::string str_received;
-    if (available_bytes)
-    {
+    if (available_bytes) {
       serial.read(str_received, available_bytes);
       extracter.AddNewData(str_received);
     }
-    else
-    {
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
     ros::spinOnce();
+    loop_rate.sleep();
   }
   return EXIT_SUCCESS;
 }
