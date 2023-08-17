@@ -5,6 +5,7 @@
 #include "nlink_unpack/nlink_iot_frame0.h"
 #include "nlink_unpack/nlink_utils.h"
 #include "nutils.h"
+#include <string.h>
 
 namespace {
 class ProtocolFrame0 : public NLinkProtocol {
@@ -42,15 +43,21 @@ void Init::InitFrame0(NProtocolExtracter *protocol_extraction) {
 
     const auto &data = g_iot_frame0;
     g_msg_iotframe0.uid = data.uid;
-    g_msg_iotframe0.nodes.resize(IOT_FRAME0_NODE_COUNT);
-    for (int i = 0; i < IOT_FRAME0_NODE_COUNT; ++i) {
-      g_msg_iotframe0.nodes[i].uid = data.nodes[i].uid;
-      g_msg_iotframe0.nodes[i].cnt = data.nodes[i].cnt;
-      g_msg_iotframe0.nodes[i].dis = data.nodes[i].dis;
-      g_msg_iotframe0.nodes[i].aoa_angle_horizontal =
-          data.nodes[i].aoa_angle_horizontal;
-      g_msg_iotframe0.nodes[i].aoa_angle_vertical =
-          data.nodes[i].aoa_angle_vertical;
+    g_msg_iotframe0.system_time = data.system_time;
+    g_msg_iotframe0.io_status = *(const uint8_t *)&(data.io_status);
+    g_msg_iotframe0.nodes.resize(data.node_count);
+    for (int i = 0; i < data.node_count; ++i) {
+      auto &dst = g_msg_iotframe0.nodes[i];
+      const auto &src = data.nodes[i];
+      dst.uid = src.uid;
+      dst.dis = src.dis;
+      dst.aoa_angle_horizontal = src.aoa_angle_horizontal;
+      dst.aoa_angle_vertical = src.aoa_angle_vertical;
+      dst.fp_rssi = src.fp_rssi;
+      dst.rx_rssi = src.rx_rssi;
+      dst.user_data.clear();
+      dst.user_data.insert(dst.user_data.begin(), src.user_data,
+                           src.user_data + src.user_data_len);
     }
 
     publishers_.at(protocol).publish(g_msg_iotframe0);
