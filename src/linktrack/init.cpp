@@ -11,7 +11,7 @@
 #include <nlink_parser/LinktrackTagframe0.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
-
+#include <time.h>
 #include "nutils.h"
 #include "protocols.h"
 
@@ -165,7 +165,8 @@ void Init::initNodeFrame1(NProtocolExtracter *protocol_extraction) {
     const auto &data = g_nlt_nodeframe1.result;
     auto &msg_data = g_msg_nodeframe1;
     auto &msg_nodes = msg_data.nodes;
-
+    msg_data.header.stamp = ros::Time::now();
+    msg_data.unix_timestamp =static_cast<int64_t>(time(NULL));
     msg_data.role = data.role;
     msg_data.id = data.id;
     msg_data.local_time = data.local_time;
@@ -198,7 +199,8 @@ void Init::initNodeFrame2(NProtocolExtracter *protocol_extraction) {
     const auto &data = g_nlt_nodeframe2.result;
     auto &msg_data = g_msg_nodeframe2;
     auto &msg_nodes = msg_data.nodes;
-
+    msg_data.header.stamp = ros::Time::now();
+    msg_data.unix_timestamp =static_cast<int64_t>(time(NULL));
     msg_data.role = data.role;
     msg_data.id = data.id;
     msg_data.local_time = data.local_time;
