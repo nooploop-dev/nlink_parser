@@ -1,0 +1,9 @@
+<launch>
+  <!-- 启动rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nlink_parser)/rviz/vis.rviz" />
+  
+  <!-- 启动你的可视化节点 -->
+  <node name="visualization_node" pkg="nlink_parser" type="visualization_node.py" output="screen">
+    <param name="config_file" type="string" value="$(find nlink_parser)/config.yaml"/>
+  </node>
+</launch>
