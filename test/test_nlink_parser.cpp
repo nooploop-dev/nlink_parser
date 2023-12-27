@@ -473,6 +473,34 @@ TEST(nlink_parser, linktrack_aoa) {
   EXPECT_NEAR(msg.nodes[3].angle, -49.67f, kAbsError);
 }
 
+namespace iot {
+extern nlink_parser::IotFrame0 g_msg_iotframe0;
+}
+
+TEST(nlink_parser, iot) {
+  NProtocolExtracter protocol_extraction;
+  iot::Init init(&protocol_extraction);
+
+  uint8_t data[128];
+  auto string = "6a 00 1d 00 00 4f 00 30 fa db 0b 00 00 01 00 5b 00 2f 12 01 "
+                "00 a5 f0 3c 03 8f a5 00 8c";
+  auto data_length = NLink_StringToHex(string, data);
+  protocol_extraction.AddNewData(data, data_length);
+
+  auto &msg = iot::g_msg_iotframe0;
+  EXPECT_EQ(msg.uid, 0x30004f00);
+  EXPECT_EQ(msg.system_time, 0x000bdbfa);
+  EXPECT_EQ(msg.io_status, 0);
+  EXPECT_EQ(msg.nodes.size(), 1);
+  EXPECT_EQ(msg.nodes[0].uid, 0x2f005b00);
+  EXPECT_NEAR(msg.nodes[0].dis, 0.274f, kAbsError);
+  EXPECT_NEAR(msg.nodes[0].aoa_angle_horizontal, -39.31f, kAbsError);
+  EXPECT_NEAR(msg.nodes[0].aoa_angle_vertical, 8.28f, kAbsError);
+  EXPECT_NEAR(msg.nodes[0].fp_rssi, -71.5f, kAbsError);
+  EXPECT_NEAR(msg.nodes[0].rx_rssi, -82.5f, kAbsError);
+  EXPECT_EQ(msg.nodes[0].user_data.empty(), true);
+}
+
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);

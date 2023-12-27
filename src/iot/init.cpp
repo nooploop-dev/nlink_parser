@@ -8,12 +8,12 @@
 #include <string.h>
 
 namespace {
-class ProtocolFrame0 : public NLinkProtocol {
+class ProtocolFrame0 : public NLinkProtocolVLength {
 public:
   ProtocolFrame0()
-      : NLinkProtocol(true, g_iot_frame0.fixed_part_size,
-                      {g_iot_frame0.frame_header, g_iot_frame0.function_mark}) {
-  }
+      : NLinkProtocolVLength(
+            true, g_iot_frame0.fixed_part_size,
+            {g_iot_frame0.frame_header, g_iot_frame0.function_mark}) {}
 
 protected:
   void UnpackFrameData(const uint8_t *data) override {
